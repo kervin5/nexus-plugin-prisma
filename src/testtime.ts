@@ -1,7 +1,11 @@
-import * as NexusPlugin from 'nexus-future/plugin'
+import { TesttimePlugin } from 'nexus-future/plugin'
 import { getPrismaClientInstance } from './lib/prisma-client'
 
-export function testTimePlugin(_project: NexusPlugin.Lens) {
+if (process.env.LINK) {
+  process.env.NEXUS_PRISMA_LINK = process.env.LINK
+}
+
+export const plugin: TesttimePlugin = () => {
   const plugin = () => {
     return {
       app: {

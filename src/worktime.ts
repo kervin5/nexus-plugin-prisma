@@ -2,11 +2,13 @@ import * as Prisma from '@prisma/sdk'
 import chalk from 'chalk'
 import { stripIndent } from 'common-tags'
 import * as fs from 'fs-jetpack'
-import { Layout } from 'nexus-future/dist/lib/layout'
-import { PackageManager } from 'nexus-future/dist/lib/package-manager'
-import { WorkflowDefiner } from 'nexus-future/dist/lib/plugin'
-import * as NexusPlugin from 'nexus-future/plugin'
+import { WorktimeLens, WorktimePlugin } from 'nexus-future/plugin'
+import * as os from 'os'
 import * as Path from 'path'
+
+if (process.env.LINK) {
+  process.env.NEXUS_PRISMA_LINK = process.env.LINK
+}
 
 /**
  * Pinned query-engine version. Calculated at build time and based on `prisma2` version
@@ -14,43 +16,42 @@ import * as Path from 'path'
 export const PRISMA_QUERY_ENGINE_VERSION: string = require('prisma2/package.json')
   .prisma.version
 
-export function worktimePlugin(project: NexusPlugin.Lens): WorkflowDefiner {
+export const plugin: WorktimePlugin = p => {
   let elapsedMsSinceRestart = Date.now()
 
-  const plugin: WorkflowDefiner = (hooks, { layout, packageManager }) => {
-    project.utils.log.trace('start')
-    // build
-    hooks.build.onStart = async () => {
-      await runPrismaGenerators(project, layout)
-    }
-    // create
-    hooks.create.onAfterBaseSetup = async hctx => {
-      if (hctx.database === undefined) {
-        throw new Error(
-          'Should never happen. Prisma plugin should not be installed if no database were chosen in the create workflow'
-        )
-      }
-      const datasource = renderDatasource(
-        {
-          database: hctx.database,
-          connectionURI: hctx.connectionURI,
-        },
-        layout.project.name
+  p.log.trace('start')
+
+  p.hooks.build.onStart = async () => {
+    await runPrismaGenerators(p)
+  }
+
+  p.hooks.create.onAfterBaseSetup = async hctx => {
+    if (hctx.database === undefined) {
+      throw new Error(
+        'Should never happen. Prisma plugin should not be installed if no database were chosen in the create workflow'
       )
-      await Promise.all([
-        fs.appendAsync(
-          '.gitignore',
-          '\n' +
-            stripIndent`
+    }
+    const datasource = renderDatasource(
+      {
+        database: hctx.database,
+        connectionURI: hctx.connectionURI,
+      },
+      p.layout.project.name
+    )
+    await Promise.all([
+      fs.appendAsync(
+        '.gitignore',
+        os.EOL +
+          stripIndent`
                 # Prisma
                 failed-inferMigrationSteps*
               `
-        ),
-        fs.writeAsync(
-          'prisma/schema.prisma',
-          datasource +
-            '\n' +
-            stripIndent`
+      ),
+      fs.writeAsync(
+        'prisma/schema.prisma',
+        datasource +
+          os.EOL +
+          stripIndent`
               generator prisma_client {
                 provider = "prisma-client-js"
               }
@@ -61,10 +62,10 @@ export function worktimePlugin(project: NexusPlugin.Lens): WorkflowDefiner {
                 population Float
               }
             `
-        ),
-        fs.writeAsync(
-          'prisma/seed.ts',
-          stripIndent`
+      ),
+      fs.writeAsync(
+        'prisma/seed.ts',
+        stripIndent`
               import { PrismaClient } from '@prisma/client'
   
               const db = new PrismaClient()
@@ -90,10 +91,10 @@ export function worktimePlugin(project: NexusPlugin.Lens): WorkflowDefiner {
                 db.disconnect()
               }
             `
-        ),
-        fs.writeAsync(
-          layout.sourcePath('graphql.ts'),
-          stripIndent`
+      ),
+      fs.writeAsync(
+        p.layout.sourcePath('graphql.ts'),
+        stripIndent`
               import { schema } from "nexus-future"
       
               schema.objectType({
@@ -135,103 +136,101 @@ export function worktimePlugin(project: NexusPlugin.Lens): WorkflowDefiner {
                 }
               })
             `
-        ),
-      ])
-      if (hctx.connectionURI || hctx.database === 'SQLite') {
-        project.utils.log.info('Initializing development database...')
-        // TODO expose run on nexus-future
-        await packageManager.runBin(
-          'prisma2 migrate save --create-db --name init --experimental',
-          {
-            require: true,
-          }
-        )
-        await packageManager.runBin('prisma2 migrate up -c --experimental', {
+      ),
+    ])
+    if (hctx.connectionURI || hctx.database === 'SQLite') {
+      p.log.info('Initializing development database...')
+      // TODO expose run on nexus-future
+      await p.packageManager.runBin(
+        'prisma2 migrate save --create-db --name init --experimental',
+        {
           require: true,
-        })
-        project.utils.log.info('Generating Prisma Client JS...')
-        await packageManager.runBin('prisma2 generate', { require: true })
-        project.utils.log.info('Seeding development database...')
-        await packageManager.runBin('ts-node prisma/seed', {
-          require: true,
-        })
-      } else {
-        project.utils.log.info(stripIndent`
+        }
+      )
+      await p.packageManager.runBin('prisma2 migrate up -c --experimental', {
+        require: true,
+      })
+      p.log.info('Generating Prisma Client JS...')
+      await p.packageManager.runBin('prisma2 generate', { require: true })
+      p.log.info('Seeding development database...')
+      await p.packageManager.runBin('ts-node prisma/seed', {
+        require: true,
+      })
+    } else {
+      p.log.info(stripIndent`
             1. Please setup your ${
               hctx.database
             } and fill in the connection uri in your \`${chalk.greenBright(
-          'prisma/schema.prisma'
-        )}\` file.
+        'prisma/schema.prisma'
+      )}\` file.
           `)
-        project.utils.log.info(stripIndent`
+      p.log.info(stripIndent`
               2. Run \`${chalk.greenBright(
-                packageManager.renderRunBin(
+                p.packageManager.renderRunBin(
                   'prisma2 migrate save --experimental'
                 )
               )}\` to create your first migration file.
           `)
-        project.utils.log.info(stripIndent`
+      p.log.info(stripIndent`
             3. Run \`${chalk.greenBright(
-              packageManager.renderRunBin('prisma2 migrate up --experimental')
+              p.packageManager.renderRunBin('prisma2 migrate up --experimental')
             )}\` to migrate your database.
           `)
-        project.utils.log.info(stripIndent`
+      p.log.info(stripIndent`
           4. Run \`${chalk.greenBright(
-            packageManager.renderRunBin('prisma2 generate')
+            p.packageManager.renderRunBin('prisma2 generate')
           )}\` to generate the Prisma Client.
         `)
-        project.utils.log.info(stripIndent`
+      p.log.info(stripIndent`
             5. Run \`${chalk.greenBright(
-              packageManager.renderRunBin('ts-node prisma/seed.ts')
+              p.packageManager.renderRunBin('ts-node prisma/seed.ts')
             )}\` to seed your database.
           `)
-        project.utils.log.info(stripIndent`
+      p.log.info(stripIndent`
             6. Run \`${chalk.greenBright(
-              packageManager.renderRunScript('dev')
+              p.packageManager.renderRunScript('dev')
             )}\` to start working.
           `)
-      }
-    }
-    // generate
-    hooks.generate.onStart = async () => {
-      await runPrismaGenerators(project, layout)
-    }
-    // dev
-    hooks.dev.onStart = async () => {
-      await runPrismaGenerators(project, layout)
-    }
-
-    hooks.dev.onAfterWatcherRestart = () => {
-      elapsedMsSinceRestart = Date.now()
-    }
-
-    hooks.dev.onFileWatcherEvent = async (_event, file, _stats, watcher) => {
-      if (file.match(/.*schema\.prisma$/)) {
-        // Prevent from prompting twice when some updates to the schema are queued while the prompt is shown
-        const elapsed = Date.now() - elapsedMsSinceRestart
-        if (elapsed < 50) {
-          return
-        }
-
-        await promptForMigration(project, layout, packageManager, watcher, file)
-      }
-    }
-    hooks.dev.addToWatcherSettings = {
-      // TODO preferably we allow schema.prisma to be anywhere but they show up in
-      // migrations folder too and we don't know how to achieve semantic "anywhere
-      // but migrations folder"
-      watchFilePatterns: ['./schema.prisma', './prisma/schema.prisma'],
-      listeners: {
-        app: {
-          ignoreFilePatterns: ['./prisma/**', './schema.prisma'],
-        },
-        plugin: {
-          allowFilePatterns: ['./schema.prisma', './prisma/schema.prisma'],
-        },
-      },
     }
   }
+  // generate
+  p.hooks.generate.onStart = async () => {
+    await runPrismaGenerators(p)
+  }
+  // dev
+  p.hooks.dev.onStart = async () => {
+    await runPrismaGenerators(p)
+  }
 
+  p.hooks.dev.onAfterWatcherRestart = () => {
+    elapsedMsSinceRestart = Date.now()
+  }
+
+  p.hooks.dev.onFileWatcherEvent = async (_event, file, _stats, watcher) => {
+    if (file.match(/.*schema\.prisma$/)) {
+      // Prevent from prompting twice when some updates to the schema are queued while the prompt is shown
+      const elapsed = Date.now() - elapsedMsSinceRestart
+      if (elapsed < 50) {
+        return
+      }
+
+      await promptForMigration(p, watcher, file)
+    }
+  }
+  p.hooks.dev.addToWatcherSettings = {
+    // TODO preferably we allow schema.prisma to be anywhere but they show up in
+    // migrations folder too and we don't know how to achieve semantic "anywhere
+    // but migrations folder"
+    watchFilePatterns: ['./schema.prisma', './prisma/schema.prisma'],
+    listeners: {
+      app: {
+        ignoreFilePatterns: ['./prisma/**', './schema.prisma'],
+      },
+      plugin: {
+        allowFilePatterns: ['./schema.prisma', './prisma/schema.prisma'],
+      },
+    },
+  }
   return plugin
 }
 
@@ -291,7 +290,7 @@ function renderDatasource(
         provider = "${provider}"
         url      = "${renderConnectionURI(db, projectName)}"
       }
-    ` + '\n'
+    ` + os.EOL
   )
 }
 
@@ -323,49 +322,48 @@ function renderConnectionURI(
  * Execute all the generators in the user's PSL file.
  */
 async function runPrismaGenerators(
-  project: NexusPlugin.Lens,
-  layout: Layout,
+  p: WorktimeLens,
   options: { silent: boolean } = { silent: false }
 ): Promise<void> {
   if (!options.silent) {
-    project.utils.log.info('Running Prisma generators ...')
+    p.log.info('Running Prisma generators ...')
   }
 
-  const schemaPath = maybeFindPrismaSchema(layout)
+  const schemaPath = maybeFindPrismaSchema(p)
 
   if (!schemaPath) {
-    project.utils.log.error(stripIndent`
+    p.log.error(stripIndent`
       We could not find any \`schema.prisma\` file. Please create one or check out the docs to get started here: http://nxs.li/nexus-plugin-prisma
       `)
     process.exit(1)
   }
 
-  project.utils.log.trace('loading generators...')
+  p.log.trace('loading generators...')
   let generators = await getGenerators(schemaPath)
-  project.utils.log.trace('generators loaded.')
+  p.log.trace('generators loaded.')
 
   if (
     !generators.find(g => g.options?.generator.provider === 'prisma-client-js')
   ) {
-    await scaffoldPrismaClientGeneratorBlock(project, schemaPath)
+    await scaffoldPrismaClientGeneratorBlock(p, schemaPath)
     // TODO: Generate it programmatically instead for performance reason
     generators = await getGenerators(schemaPath)
   }
 
   for (const g of generators) {
     const resolvedSettings = getGeneratorResolvedSettings(g)
-    project.utils.log.trace('generating', resolvedSettings)
+    p.log.trace('generating', resolvedSettings)
     await g.generate()
     g.stop()
-    project.utils.log.trace('done generating', resolvedSettings)
+    p.log.trace('done generating', resolvedSettings)
   }
 }
 
 /**
  * Find the PSL file in the project. If multiple are found a warning is logged.
  */
-function maybeFindPrismaSchema(layout: Layout): string | null {
-  const projectRoot = layout.projectRoot
+function maybeFindPrismaSchema(p: WorktimeLens): string | null {
+  const projectRoot = p.layout.projectRoot
   let schemaPath = Path.join(projectRoot, 'schema.prisma')
 
   if (fs.exists(schemaPath)) {
@@ -382,27 +380,25 @@ function maybeFindPrismaSchema(layout: Layout): string | null {
 }
 
 async function scaffoldPrismaClientGeneratorBlock(
-  project: NexusPlugin.Lens,
+  p: WorktimeLens,
   schemaPath: string
 ) {
   const relativeSchemaPath = Path.relative(process.cwd(), schemaPath)
-  project.utils.log.warn(
+  p.log.warn(
     `A Prisma Client JS generator block is needed in your Prisma Schema at "${relativeSchemaPath}".`
   )
-  project.utils.log.warn('We scaffolded one for you.')
+  p.log.warn('We scaffolded one for you.')
   const schemaContent = await fs.readAsync(schemaPath)!
   const generatorBlock = stripIndent`
       generator prisma_client {
         provider = "prisma-client-js"
       }
     `
-  await fs.writeAsync(schemaPath, `${generatorBlock}\n${schemaContent}`)
+  await fs.writeAsync(schemaPath, `${generatorBlock}${os.EOL}${schemaContent}`)
 }
 
 async function promptForMigration(
-  project: NexusPlugin.Lens,
-  layout: Layout,
-  packageManager: PackageManager,
+  p: WorktimeLens,
   watcher: {
     restart: (file: string) => void
     pause: () => void
@@ -411,21 +407,19 @@ async function promptForMigration(
   file: string
 ) {
   watcher.pause()
-  project.utils.log.info('We detected a change in your Prisma Schema file.')
-  project.utils.log.info(
-    "If you're using Prisma Migrate, follow the step below:"
-  )
-  project.utils.log.info(
+  p.log.info('We detected a change in your Prisma Schema file.')
+  p.log.info("If you're using Prisma Migrate, follow the step below:")
+  p.log.info(
     `1. Run ${chalk.greenBright(
-      packageManager.renderRunBin('prisma2 migrate save --experimental')
+      p.packageManager.renderRunBin('prisma2 migrate save --experimental')
     )} to create a migration file.`
   )
-  project.utils.log.info(
+  p.log.info(
     `2. Run ${chalk.greenBright(
-      packageManager.renderRunBin('prisma2 migrate up --experimental')
+      p.packageManager.renderRunBin('prisma2 migrate up --experimental')
     )} to apply your migration.`
   )
-  await project.utils.prompt({
+  await p.prompt({
     type: 'confirm',
     name: 'confirm',
     message: 'Press Y to restart once your migration is applied',
@@ -436,6 +430,6 @@ async function promptForMigration(
     no: 'Restarting...',
   } as any)
 
-  await runPrismaGenerators(project, layout)
+  await runPrismaGenerators(p)
   watcher.restart(file)
 }

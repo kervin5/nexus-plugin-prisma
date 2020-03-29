@@ -3,7 +3,7 @@
   "version": "0.0.0-dripip",
   "license": "MIT",
   "author": "Jason Kuhrt",
-  "main": "dist/index.js",
+  "main": "dist/runtime.js",
   "module": "dist/mylib.esm.js",
   "typings": "dist/index.d.ts",
   "files": [
@@ -27,7 +27,7 @@
     "postinstall": "node ./scripts/postinstall.js"
   },
   "peerDependencies": {
-    "nexus-future": "^0.13.0-next",
+    "nexus-future": "^0.13.0-next.11",
     "prisma2": "2.0.0-preview023"
   },
   "dependencies": {
@@ -38,8 +38,7 @@
     "common-tags": "^1.8.0",
     "fs-jetpack": "^2.2.3",
     "graphql": "^14.6.0",
-    "nexus": "^0.12.0-rc.13",
-    "nexus-prisma": "^0.11.1",
+    "nexus-prisma": "^0.12.0-next.1",
     "prismjs": "^1.19.0",
     "stacktrace-parser": "^0.1.9"
   },
@@ -49,10 +48,9 @@
     "@types/jest": "25.1.4",
     "@types/prismjs": "1.16.0",
     "dripip": "0.8.0",
-    "husky": "4.2.3",
     "jest": "^25.2.2",
     "jest-watch-typeahead": "^0.4.2",
-    "nexus-future": "^0.13.0-next.6",
+    "nexus-future": "^0.13.0-next.11",
     "node-fetch": "2.6.0",
     "node-pty": "0.9.0",
     "prettier": "1.19.1",
@@ -72,11 +70,6 @@
       "jest-watch-typeahead/filename",
       "jest-watch-typeahead/testname"
     ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "pretty-quick --staged --pattern '**/*.ts'"
-    }
   },
   "prettier": {
     "semi": false,

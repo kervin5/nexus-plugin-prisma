@@ -12,7 +12,7 @@ import * as Path from 'path'
  */
 export function linkableRequire(id: string): any {
   if (process.env.LINK) {
-    return require(Path.join(process.cwd(), '/node_modules/', id))
+    return require(Path.join(process.cwd(), 'node_modules', id))
   } else {
     return require(id)
   }
@@ -20,8 +20,17 @@ export function linkableRequire(id: string): any {
 
 export function linkableResolve(id: string): any {
   if (process.env.LINK) {
-    return require.resolve(Path.join(process.cwd(), '/node_modules/', id))
+    return require.resolve(Path.join(process.cwd(), 'node_modules', id))
   } else {
     return require.resolve(id)
+  }
+}
+
+export function linkableProjectDir(): any {
+  if (process.env.LINK) {
+    return process.cwd()
+  } else {
+    // lib/src/nexus-plugin-prisma/node_modules
+    return Path.join(__dirname, '..', '..', '..', '..')
   }
 }
