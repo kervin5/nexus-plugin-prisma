@@ -1,6 +1,7 @@
 import * as Prisma from '@prisma/sdk'
 import chalk from 'chalk'
 import { stripIndent } from 'common-tags'
+import * as dotenv from 'dotenv'
 import * as fs from 'fs-jetpack'
 import { WorktimeLens, WorktimePlugin } from 'nexus-future/plugin'
 import * as os from 'os'
@@ -31,13 +32,7 @@ export const plugin: WorktimePlugin = p => {
         'Should never happen. Prisma plugin should not be installed if no database were chosen in the create workflow'
       )
     }
-    const datasource = renderDatasource(
-      {
-        database: hctx.database,
-        connectionURI: hctx.connectionURI,
-      },
-      p.layout.project.name
-    )
+    const datasource = renderDatasource(hctx.database)
     await Promise.all([
       fs.appendAsync(
         '.gitignore',
@@ -62,6 +57,15 @@ export const plugin: WorktimePlugin = p => {
                 population Float
               }
             `
+      ),
+      fs.writeAsync(
+        'prisma/.env',
+        stripIndent`
+          DATABASE_URL="${renderConnectionURI(
+            { database: hctx.database, connectionURI: hctx.connectionURI },
+            p.layout.project.name
+          )}"
+        `
       ),
       fs.writeAsync(
         'prisma/seed.ts',
@@ -275,20 +279,14 @@ const DATABASE_TO_PRISMA_PROVIDER: Record<
   PostgreSQL: 'postgresql',
 }
 
-function renderDatasource(
-  db: {
-    database: Database
-    connectionURI: ConnectionURI
-  },
-  projectName: string
-): string {
-  const provider = DATABASE_TO_PRISMA_PROVIDER[db.database]
+function renderDatasource(database: Database): string {
+  const provider = DATABASE_TO_PRISMA_PROVIDER[database]
 
   return (
     stripIndent`
       datasource db {
         provider = "${provider}"
-        url      = "${renderConnectionURI(db, projectName)}"
+        url      = env("DATABASE_URL")
       }
     ` + os.EOL
   )
@@ -329,14 +327,9 @@ async function runPrismaGenerators(
     p.log.info('Running Prisma generators ...')
   }
 
-  const schemaPath = maybeFindPrismaSchema(p)
+  const schemaPath = findPrismaSchema(p)
 
-  if (!schemaPath) {
-    p.log.error(stripIndent`
-      We could not find any \`schema.prisma\` file. Please create one or check out the docs to get started here: http://nxs.li/nexus-plugin-prisma
-      `)
-    process.exit(1)
-  }
+  loadEnv(p, schemaPath)
 
   p.log.trace('loading generators...')
   let generators = await getGenerators(schemaPath)
@@ -359,10 +352,28 @@ async function runPrismaGenerators(
   }
 }
 
+export function loadEnv(p: WorktimeLens, schemaPath: string): void {
+  const schemaDir = Path.dirname(schemaPath)
+  let envPath: string | null = Path.join(schemaDir, '.env')
+
+  // Look next to `schema.prisma`, other look in project root
+  if (!fs.exists(envPath)) {
+    envPath = Path.join(p.layout.projectRoot, '.env')
+  }
+
+  if (!fs.exists(envPath)) {
+    p.log.trace(`No .env file found. Looked at: ${envPath}`)
+    return
+  }
+
+  p.log.trace(`.env file found. Looked at: ${envPath}`)
+  dotenv.config({ path: envPath })
+}
+
 /**
  * Find the PSL file in the project. If multiple are found a warning is logged.
  */
-function maybeFindPrismaSchema(p: WorktimeLens): string | null {
+function findPrismaSchema(p: WorktimeLens): string {
   const projectRoot = p.layout.projectRoot
   let schemaPath = Path.join(projectRoot, 'schema.prisma')
 
@@ -376,7 +387,13 @@ function maybeFindPrismaSchema(p: WorktimeLens): string | null {
     return schemaPath
   }
 
-  return null
+  p.log.error(stripIndent`
+    We could not find any \`schema.prisma\` file. We looked in:
+      - ${Path.join(projectRoot, 'schema.prisma')}
+      - ${schemaPath}
+    Please create one or check out the docs to get started here: http://nxs.li/nexus-plugin-prisma
+  `)
+  process.exit(1)
 }
 
 async function scaffoldPrismaClientGeneratorBlock(
