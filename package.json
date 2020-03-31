@@ -27,8 +27,7 @@
     "postinstall": "node ./scripts/postinstall.js"
   },
   "peerDependencies": {
-    "nexus-future": "^0.13.0-next.11",
-    "prisma2": "2.0.0-preview023"
+    "nexus-future": "^0.13.0-next.11"
   },
   "dependencies": {
     "@nexus/schema": "^0.12.0-rc.13",
@@ -40,6 +39,7 @@
     "fs-jetpack": "^2.2.3",
     "graphql": "^14.6.0",
     "nexus-prisma": "^0.12.0-next.1",
+    "prisma2": "2.0.0-preview023",
     "prismjs": "^1.19.0",
     "stacktrace-parser": "^0.1.9"
   },
