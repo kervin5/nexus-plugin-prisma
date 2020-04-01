@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { RuntimePlugin } from 'nexus-future/plugin'
+import { RuntimePlugin } from 'nexus/plugin'
 import { nexusPrismaPlugin, Options as NexusPrismaOptions } from 'nexus-prisma'
 import * as Path from 'path'
 import { suggestionList } from './lib/levenstein'
@@ -38,7 +38,10 @@ export const plugin: RuntimePlugin = project => {
   const prismaClientDir = getPrismaClientDir()
   const nexusPrismaTypegenOutput = Path.join(
     linkableProjectDir(),
-    'node_modules/@types/typegen-nexus-prisma/index.d.ts'
+    'node_modules',
+    '@types',
+    'typegen-nexus-prisma',
+    'index.d.ts'
   )
 
   return {
@@ -81,7 +84,7 @@ export const plugin: RuntimePlugin = project => {
             typegen: nexusPrismaTypegenOutput,
           },
           prismaClient: ctx => ctx.db,
-          shouldGenerateArtifacts: project.isBuild,
+          shouldGenerateArtifacts: project.shouldGenerateArtifacts,
           onUnknownFieldName: params => renderUnknownFieldNameError(params),
           onUnknownFieldType: params => renderUnknownFieldTypeError(params),
         } as OptionsWithHook),

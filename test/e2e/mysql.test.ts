@@ -1,6 +1,6 @@
 import * as FS from 'fs-jetpack'
-import { setupE2EContext } from 'nexus-future/dist/lib/e2e-testing'
-import { getTmpDir } from 'nexus-future/dist/lib/fs'
+import { createE2EContext } from 'nexus/dist/lib/e2e-testing'
+import { getTmpDir } from 'nexus/dist/lib/fs'
 import * as Path from 'path'
 import stripAnsi from 'strip-ansi'
 import { e2eTestPlugin } from './helpers'
@@ -8,19 +8,21 @@ import { e2eTestPlugin } from './helpers'
 const tmpDir = getTmpDir()
 const testProjectDir = Path.join(tmpDir, 'mysql')
 const envPath = Path.join(testProjectDir, 'prisma', '.env')
-const ctx = setupE2EContext({
-  testProjectDir,
+const ctx = createE2EContext({
+  dir: testProjectDir,
 })
 
 test('e2e with mysql', async () => {
-  console.log(ctx.projectDir)
+  console.log(ctx.dir)
 
-  let nexusVersion = process.env.NEXUS_VERSION ?? 'latest'
+  let nexusVersion = process.env.NEXUS_VERSION ?? 'next'
   // Run npx nexus from local path
-  const initResult = await ctx.spawnNPXNexus(
-    'npm',
-    'MySQL',
-    nexusVersion,
+  const initResult = await ctx.npxNexusCreateApp(
+    {
+      packageManagerType: 'npm',
+      databaseType: 'MySQL',
+      nexusVersion,
+    },
     () => {}
   )
 

@@ -1,32 +1,33 @@
-import { setupE2EContext } from 'nexus-future/dist/lib/e2e-testing'
-import { getTmpDir } from 'nexus-future/dist/lib/fs'
+import { createE2EContext } from 'nexus/dist/lib/e2e-testing'
+import { getTmpDir } from 'nexus/dist/lib/fs'
 import * as Path from 'path'
-import stripAnsi from 'strip-ansi'
 import { e2eTestPlugin } from './helpers'
 
 const tmpDir = getTmpDir()
-const ctx = setupE2EContext({
-  testProjectDir: Path.join(tmpDir, 'sqlite'),
+const ctx = createE2EContext({
+  dir: Path.join(tmpDir, 'sqlite'),
 })
 
 test('e2e with sqlite', async () => {
-  console.log(ctx.projectDir)
+  console.log(ctx.dir)
 
-  let nexusVersion = process.env.NEXUS_VERSION ?? 'latest'
+  let nexusVersion = process.env.NEXUS_VERSION ?? 'next'
 
   // Run npx nexus
-  const createAppResult = await ctx.spawnNPXNexus(
-    'npm',
-    'SQLite',
-    nexusVersion,
+  const createAppResult = await ctx.npxNexusCreateApp(
+    {
+      packageManagerType: 'npm',
+      databaseType: 'SQLite',
+      nexusVersion,
+    },
     (data, proc) => {
-      if (stripAnsi(data).includes('server:listening')) {
+      if (data.includes('server listening')) {
         proc.kill()
       }
     }
   )
 
-  expect(createAppResult.data).toContain('server:listening')
+  expect(createAppResult.data).toContain('server listening')
   expect(createAppResult.exitCode).toStrictEqual(0)
 
   // Do not run migration or seed because `nexus init` does it already for sqlite

@@ -3,7 +3,7 @@ import chalk from 'chalk'
 import { stripIndent } from 'common-tags'
 import * as dotenv from 'dotenv'
 import * as fs from 'fs-jetpack'
-import { WorktimeLens, WorktimePlugin } from 'nexus-future/plugin'
+import { WorktimeLens, WorktimePlugin } from 'nexus/plugin'
 import * as os from 'os'
 import * as Path from 'path'
 
@@ -12,9 +12,9 @@ if (process.env.LINK) {
 }
 
 /**
- * Pinned query-engine version. Calculated at build time and based on `prisma2` version
+ * Pinned query-engine version. Calculated at build time and based on `@prisma/cli` version
  */
-export const PRISMA_QUERY_ENGINE_VERSION: string = require('prisma2/package.json')
+export const PRISMA_QUERY_ENGINE_VERSION: string = require('@prisma/cli/package.json')
   .prisma.version
 
 export const plugin: WorktimePlugin = p => {
@@ -99,7 +99,7 @@ export const plugin: WorktimePlugin = p => {
       fs.writeAsync(
         p.layout.sourcePath('graphql.ts'),
         stripIndent`
-              import { schema } from "nexus-future"
+              import { schema } from "nexus"
       
               schema.objectType({
                 name: "World",
@@ -144,18 +144,18 @@ export const plugin: WorktimePlugin = p => {
     ])
     if (hctx.connectionURI || hctx.database === 'SQLite') {
       p.log.info('Initializing development database...')
-      // TODO expose run on nexus-future
+      // TODO expose run on nexus
       await p.packageManager.runBin(
-        'prisma2 migrate save --create-db --name init --experimental',
+        'prisma migrate save --create-db --name init --experimental',
         {
           require: true,
         }
       )
-      await p.packageManager.runBin('prisma2 migrate up -c --experimental', {
+      await p.packageManager.runBin('prisma migrate up -c --experimental', {
         require: true,
       })
       p.log.info('Generating Prisma Client JS...')
-      await p.packageManager.runBin('prisma2 generate', { require: true })
+      await p.packageManager.runBin('prisma generate', { require: true })
       p.log.info('Seeding development database...')
       await p.packageManager.runBin('ts-node prisma/seed', {
         require: true,
@@ -165,24 +165,24 @@ export const plugin: WorktimePlugin = p => {
             1. Please setup your ${
               hctx.database
             } and fill in the connection uri in your \`${chalk.greenBright(
-        'prisma/schema.prisma'
+        'prisma/.env'
       )}\` file.
           `)
       p.log.info(stripIndent`
               2. Run \`${chalk.greenBright(
                 p.packageManager.renderRunBin(
-                  'prisma2 migrate save --experimental'
+                  'prisma migrate save --experimental'
                 )
               )}\` to create your first migration file.
           `)
       p.log.info(stripIndent`
             3. Run \`${chalk.greenBright(
-              p.packageManager.renderRunBin('prisma2 migrate up --experimental')
+              p.packageManager.renderRunBin('prisma migrate up --experimental')
             )}\` to migrate your database.
           `)
       p.log.info(stripIndent`
           4. Run \`${chalk.greenBright(
-            p.packageManager.renderRunBin('prisma2 generate')
+            p.packageManager.renderRunBin('prisma generate')
           )}\` to generate the Prisma Client.
         `)
       p.log.info(stripIndent`
@@ -428,12 +428,12 @@ async function promptForMigration(
   p.log.info("If you're using Prisma Migrate, follow the step below:")
   p.log.info(
     `1. Run ${chalk.greenBright(
-      p.packageManager.renderRunBin('prisma2 migrate save --experimental')
+      p.packageManager.renderRunBin('prisma migrate save --experimental')
     )} to create a migration file.`
   )
   p.log.info(
     `2. Run ${chalk.greenBright(
-      p.packageManager.renderRunBin('prisma2 migrate up --experimental')
+      p.packageManager.renderRunBin('prisma migrate up --experimental')
     )} to apply your migration.`
   )
   await p.prompt({

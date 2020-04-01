@@ -1,16 +1,18 @@
 import { introspectionQuery } from 'graphql'
-import { ptySpawn, setupE2EContext } from 'nexus-future/dist/lib/e2e-testing'
+import { ptySpawn, createE2EContext } from 'nexus/dist/lib/e2e-testing'
 import stripAnsi from 'strip-ansi'
+import * as Path from 'path'
+import * as fs from 'fs-jetpack'
 
 export async function e2eTestPlugin(
-  ctx: ReturnType<typeof setupE2EContext>,
+  ctx: ReturnType<typeof createE2EContext>,
   opts?: { withoutMigration?: boolean; withoutSeed?: boolean }
 ) {
   if (!opts?.withoutMigration) {
     console.log('Create migration file...')
     const dbMigrateSaveResult = await ctx.spawn([
       'yarn',
-      'prisma2',
+      'prisma',
       'migrate',
       'save',
       '--create-db',
@@ -26,7 +28,7 @@ export async function e2eTestPlugin(
     console.log('Apply migration...')
     const dbMigrateUpResult = await ctx.spawn([
       'yarn',
-      'prisma2',
+      'prisma',
       'migrate',
       'up',
       '--auto-approve',
@@ -37,13 +39,13 @@ export async function e2eTestPlugin(
     expect(dbMigrateUpResult.exitCode).toStrictEqual(0)
   }
 
-  await ctx.spawn(['yarn', 'prisma2', 'generate'])
+  await ctx.spawn(['yarn', 'prisma', 'generate'])
 
   if (!opts?.withoutSeed) {
     const seedResult = await ptySpawn(
       'yarn',
       ['-s', 'ts-node', 'prisma/seed.ts'],
-      { cwd: ctx.projectDir },
+      { cwd: ctx.dir },
       () => {}
     )
 
@@ -52,8 +54,8 @@ export async function e2eTestPlugin(
   }
 
   // Run nexus dev and query graphql api
-  await ctx.spawnNexus(['dev'], async (data, proc) => {
-    if (data.includes('server:listening')) {
+  await ctx.nexus(['dev'], async (data, proc) => {
+    if (data.includes('server listening')) {
       const queryResult: { worlds: any[] } = await ctx.client.request(`{
         worlds {
           id
@@ -75,8 +77,19 @@ export async function e2eTestPlugin(
     }
   })
 
+  const nexusPrismaTypegenPath = Path.join(
+    ctx.dir,
+    'node_modules',
+    '@types',
+    'typegen-nexus-prisma',
+    'index.d.ts'
+  )
+
+  // Assert that nexus-prisma typegen was created
+  expect(fs.exists(nexusPrismaTypegenPath)).toStrictEqual('file')
+
   // Run nexus build
-  const res = await ctx.spawnNexus(['build'], () => {})
+  const res = await ctx.nexus(['build'], () => {})
 
   expect(res.data).toContain('success')
   expect(res.exitCode).toStrictEqual(0)

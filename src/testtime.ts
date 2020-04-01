@@ -1,4 +1,4 @@
-import { TesttimePlugin } from 'nexus-future/plugin'
+import { TesttimePlugin } from 'nexus/plugin'
 import { getPrismaClientInstance } from './lib/prisma-client'
 
 if (process.env.LINK) {
