@@ -88,6 +88,18 @@ export async function e2eTestPlugin(
   // Assert that nexus-prisma typegen was created
   expect(fs.exists(nexusPrismaTypegenPath)).toStrictEqual('file')
 
+  // Assert that nexus-prisma test context types were created
+
+  const nexusPrismaTestContextTypesPath = Path.join(
+    ctx.dir,
+    'node_modules',
+    '@types',
+    'nexus-plugin-prisma',
+    'index.d.ts'
+  )
+
+  expect(fs.exists(nexusPrismaTestContextTypesPath)).toStrictEqual('file')
+
   // Run nexus build
   const res = await ctx.nexus(['build'], () => {})
 
