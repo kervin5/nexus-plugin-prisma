@@ -53,6 +53,7 @@ jobs:
           MYSQL_ROOT_PASSWORD: mysql
         options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
     steps:
+      - uses: actions/checkout@v2
       - name: Load publish result
         uses: actions/download-artifact@v1
         with:
@@ -63,8 +64,6 @@ jobs:
           jq '.version' < published/result.json
           jq '.' < published/result.json
           echo ::set-output name=result::$(jq -r '.kind' < published/result.json)
-      - uses: actions/checkout@v2
-        if: steps.release.outputs.result == 'did_publish'
       - name: Use Node.js ${{ matrix.node-version }}
         if: steps.release.outputs.result == 'did_publish'
         uses: actions/setup-node@v1
