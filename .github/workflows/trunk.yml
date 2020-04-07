@@ -17,9 +17,8 @@ jobs:
       - name: Make release
         run: |
           yarn -s dripip preview --json > result.json
-          result=$(cat result.json)
           echo '==> Publish Result'
-          jq '.' <<< $result
+          jq '.' < result.json
         env:
           NPM_TOKEN: ${{secrets.NPM_TOKEN}}
       - name: Save publish result
@@ -61,8 +60,9 @@ jobs:
       - name: Analyze publish result
         id: release
         run: |
-          cat published/result.json | jq -r '.version'
-          echo ::set-output name=result::$(jq -r '.kind' <<< $result)
+          jq '.version' < published/result.json
+          jq '.' < published/result.json
+          echo ::set-output name=result::$(jq -r '.kind' < published/result.json)
       - uses: actions/checkout@v2
         if: steps.release.outputs.result == 'did_publish'
       - name: Use Node.js ${{ matrix.node-version }}
