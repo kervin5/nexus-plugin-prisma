@@ -5,10 +5,7 @@ import * as Path from 'path'
 import { suggestionList } from './lib/levenstein'
 import { linkableProjectDir } from './lib/linkable'
 import { printStack } from './lib/print-stack'
-import {
-  getPrismaClientDir,
-  getPrismaClientInstance,
-} from './lib/prisma-client'
+import { getPrismaClientDir, getPrismaClientInstance } from './lib/prisma-client'
 
 if (process.env.LINK) {
   process.env.NEXUS_PRISMA_LINK = process.env.LINK
@@ -33,7 +30,7 @@ interface OptionsWithHook extends NexusPrismaOptions {
   onUnknownFieldType: (params: UnknownFieldType) => void
 }
 
-export const plugin: RuntimePlugin = () => project => {
+export const plugin: RuntimePlugin = () => (project) => {
   const prismaClientInstance = getPrismaClientInstance()
   const prismaClientDir = getPrismaClientDir()
   const nexusPrismaTypegenOutput = Path.join(
@@ -46,7 +43,7 @@ export const plugin: RuntimePlugin = () => project => {
 
   return {
     context: {
-      create: _req => {
+      create: (_req) => {
         return {
           db: prismaClientInstance,
         }
@@ -83,10 +80,10 @@ export const plugin: RuntimePlugin = () => project => {
           outputs: {
             typegen: nexusPrismaTypegenOutput,
           },
-          prismaClient: ctx => ctx.db,
+          prismaClient: (ctx) => ctx.db,
           shouldGenerateArtifacts: project.shouldGenerateArtifacts,
-          onUnknownFieldName: params => renderUnknownFieldNameError(params),
-          onUnknownFieldType: params => renderUnknownFieldTypeError(params),
+          onUnknownFieldName: (params) => renderUnknownFieldNameError(params),
+          onUnknownFieldType: (params) => renderUnknownFieldTypeError(params),
         } as OptionsWithHook),
       ],
     },
@@ -100,16 +97,13 @@ function renderUnknownFieldNameError(params: UnknownFieldName) {
   const { stack, fileLineNumber } = printStack({
     callsite: params.error.stack,
   })
-  const suggestions = suggestionList(
-    params.unknownFieldName,
-    params.validFieldNames
-  ).map(s => chalk.green(s))
+  const suggestions = suggestionList(params.unknownFieldName, params.validFieldNames).map((s) =>
+    chalk.green(s)
+  )
   const suggestionMessage =
     suggestions.length === 0
       ? ''
-      : chalk`{yellow Warning:} Did you mean ${suggestions
-          .map(s => `"${s}"`)
-          .join(', ')} ?`
+      : chalk`{yellow Warning:} Did you mean ${suggestions.map((s) => `"${s}"`).join(', ')} ?`
   const intro = chalk`{yellow Warning:} ${params.error.message}\n{yellow Warning:} in ${fileLineNumber}\n${suggestionMessage}`
 
   // todo use logger once "pretty" api done

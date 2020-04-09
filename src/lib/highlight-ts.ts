@@ -18,7 +18,7 @@ function stringifyToken(t: string | Prism.Token, language?: any): any {
 
   if (Array.isArray(t)) {
     return t
-      .map(function(element) {
+      .map(function (element) {
         return stringifyToken(element, language)
       })
       .join('')
@@ -33,5 +33,5 @@ function getColorForSyntaxKind(syntaxKind: keyof Theme) {
 
 function highlightForTerminal(str: string, grammar: Prism.Grammar) {
   const tokens = Prism.tokenize(str, grammar)
-  return tokens.map(t => stringifyToken(t)).join('')
+  return tokens.map((t) => stringifyToken(t)).join('')
 }

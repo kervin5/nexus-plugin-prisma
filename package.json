@@ -12,6 +12,7 @@
     "global-type.d.ts"
   ],
   "scripts": {
+    "format": "prettier --write .",
     "dev": "tsc --watch",
     "build": "yarn clean && node scripts/update-hash.js && tsc",
     "build:ci": "tsc",
@@ -43,6 +44,7 @@
   },
   "devDependencies": {
     "@babel/core": "7.8.7",
+    "@prisma-labs/prettier-config": "^0.1.0",
     "@types/common-tags": "1.8.0",
     "@types/jest": "25.1.4",
     "@types/prismjs": "1.16.0",
@@ -52,7 +54,7 @@
     "nexus": "0.20.0-next.32",
     "node-fetch": "2.6.0",
     "node-pty": "0.9.0",
-    "prettier": "1.19.1",
+    "prettier": "^2.0.4",
     "pretty-quick": "2.0.1",
     "rxjs": "6.5.5",
     "strip-ansi": "6.0.0",
@@ -71,9 +73,5 @@
       "jest-watch-typeahead/testname"
     ]
   },
-  "prettier": {
-    "semi": false,
-    "singleQuote": true,
-    "trailingComma": "es5"
-  }
+  "prettier": "@prisma-labs/prettier-config"
 }

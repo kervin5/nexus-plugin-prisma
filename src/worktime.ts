@@ -14,10 +14,9 @@ if (process.env.LINK) {
 /**
  * Pinned query-engine version. Calculated at build time and based on `@prisma/cli` version
  */
-export const PRISMA_QUERY_ENGINE_VERSION: string = require('@prisma/cli/package.json')
-  .prisma.version
+export const PRISMA_QUERY_ENGINE_VERSION: string = require('@prisma/cli/package.json').prisma.version
 
-export const plugin: WorktimePlugin = () => p => {
+export const plugin: WorktimePlugin = () => (p) => {
   let elapsedMsSinceRestart = Date.now()
 
   p.log.trace('start')
@@ -26,7 +25,7 @@ export const plugin: WorktimePlugin = () => p => {
     await runPrismaGenerators(p)
   }
 
-  p.hooks.create.onAfterBaseSetup = async hctx => {
+  p.hooks.create.onAfterBaseSetup = async (hctx) => {
     if (hctx.database === undefined) {
       throw new Error(
         'Should never happen. Prisma plugin should not be installed if no database were chosen in the create workflow'
@@ -150,17 +149,14 @@ export const plugin: WorktimePlugin = () => p => {
           // Enables the Prisma plugin
           use(prisma())
         `
-      )
+      ),
     ])
     if (hctx.connectionURI || hctx.database === 'SQLite') {
       p.log.info('Initializing development database...')
       // TODO expose run on nexus
-      await p.packageManager.runBin(
-        'prisma migrate save --create-db --name init --experimental',
-        {
-          require: true,
-        }
-      )
+      await p.packageManager.runBin('prisma migrate save --create-db --name init --experimental', {
+        require: true,
+      })
       await p.packageManager.runBin('prisma migrate up -c --experimental', {
         require: true,
       })
@@ -174,15 +170,11 @@ export const plugin: WorktimePlugin = () => p => {
       p.log.info(stripIndent`
             1. Please setup your ${
               hctx.database
-            } and fill in the connection uri in your \`${chalk.greenBright(
-        'prisma/.env'
-      )}\` file.
+            } and fill in the connection uri in your \`${chalk.greenBright('prisma/.env')}\` file.
           `)
       p.log.info(stripIndent`
               2. Run \`${chalk.greenBright(
-                p.packageManager.renderRunBin(
-                  'prisma migrate save --experimental'
-                )
+                p.packageManager.renderRunBin('prisma migrate save --experimental')
               )}\` to create your first migration file.
           `)
       p.log.info(stripIndent`
@@ -201,9 +193,7 @@ export const plugin: WorktimePlugin = () => p => {
             )}\` to seed your database.
           `)
       p.log.info(stripIndent`
-            6. Run \`${chalk.greenBright(
-              p.packageManager.renderRunScript('dev')
-            )}\` to start working.
+            6. Run \`${chalk.greenBright(p.packageManager.renderRunScript('dev'))}\` to start working.
           `)
     }
   }
@@ -281,10 +271,7 @@ function getGeneratorResolvedSettings(
 type Database = 'SQLite' | 'MySQL' | 'PostgreSQL'
 type ConnectionURI = string | undefined
 
-const DATABASE_TO_PRISMA_PROVIDER: Record<
-  Database,
-  'sqlite' | 'postgresql' | 'mysql'
-> = {
+const DATABASE_TO_PRISMA_PROVIDER: Record<Database, 'sqlite' | 'postgresql' | 'mysql'> = {
   SQLite: 'sqlite',
   MySQL: 'mysql',
   PostgreSQL: 'postgresql',
@@ -303,14 +290,10 @@ function renderDatasource(database: Database): string {
   )
 }
 
-const DATABASE_TO_CONNECTION_URI: Record<
-  Database,
-  (projectName: string) => string
-> = {
-  SQLite: _ => 'file:./dev.db',
-  PostgreSQL: projectName =>
-    `postgresql://postgres:postgres@localhost:5432/${projectName}`,
-  MySQL: projectName => `mysql://root:<password>@localhost:3306/${projectName}`,
+const DATABASE_TO_CONNECTION_URI: Record<Database, (projectName: string) => string> = {
+  SQLite: (_) => 'file:./dev.db',
+  PostgreSQL: (projectName) => `postgresql://postgres:postgres@localhost:5432/${projectName}`,
+  MySQL: (projectName) => `mysql://root:<password>@localhost:3306/${projectName}`,
 }
 
 function renderConnectionURI(
@@ -346,9 +329,7 @@ async function runPrismaGenerators(
   let generators = await getGenerators(schemaPath)
   p.log.trace('generators loaded.')
 
-  if (
-    !generators.find(g => g.options?.generator.provider === 'prisma-client-js')
-  ) {
+  if (!generators.find((g) => g.options?.generator.provider === 'prisma-client-js')) {
     await scaffoldPrismaClientGeneratorBlock(p, schemaPath)
     // TODO: Generate it programmatically instead for performance reason
     generators = await getGenerators(schemaPath)
@@ -407,14 +388,9 @@ function findPrismaSchema(p: WorktimeLens): string {
   process.exit(1)
 }
 
-async function scaffoldPrismaClientGeneratorBlock(
-  p: WorktimeLens,
-  schemaPath: string
-) {
+async function scaffoldPrismaClientGeneratorBlock(p: WorktimeLens, schemaPath: string) {
   const relativeSchemaPath = Path.relative(process.cwd(), schemaPath)
-  p.log.warn(
-    `A Prisma Client JS generator block is needed in your Prisma Schema at "${relativeSchemaPath}".`
-  )
+  p.log.warn(`A Prisma Client JS generator block is needed in your Prisma Schema at "${relativeSchemaPath}".`)
   p.log.warn('We scaffolded one for you.')
   const schemaContent = await fs.readAsync(schemaPath)!
   const generatorBlock = stripIndent`

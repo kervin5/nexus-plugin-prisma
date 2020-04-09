@@ -31,4 +31,4 @@ async function main() {
   fs.writeFileSync(packageJsonPath, updatedPackageJson)
 }
 
-main().catch(e => console.error(e))
+main().catch((e) => console.error(e))

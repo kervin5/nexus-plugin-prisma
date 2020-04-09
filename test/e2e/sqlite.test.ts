@@ -8,7 +8,7 @@ const tmpDir = getTmpDir()
 const ctx = createE2EContext({
   dir: Path.join(tmpDir, 'sqlite'),
   localNexus: null,
-  serverPort: 4000
+  serverPort: 4000,
 })
 
 test('e2e with sqlite', async () => {

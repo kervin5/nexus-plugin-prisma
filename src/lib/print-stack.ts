@@ -37,31 +37,18 @@ export const printStack = ({ callsite }: ErrorArgs): PrintStackResult => {
     const stack = stackTraceParser.parse(callsite)
     // TODO: more resilient logic to find the right trace
     // TODO: should not have hard-coded knowledge of prisma here
-    const trace = stack.find(
-      t => t.file && !t.file.includes('nexus-prisma/src/')
-    )
-    if (
-      process.env.NODE_ENV !== 'production' &&
-      trace &&
-      trace.file &&
-      trace.lineNumber &&
-      trace.column
-    ) {
+    const trace = stack.find((t) => t.file && !t.file.includes('nexus-prisma/src/'))
+    if (process.env.NODE_ENV !== 'production' && trace && trace.file && trace.lineNumber && trace.column) {
       const fileName = trace.file
       const lineNumber = trace.lineNumber
       fileLineNumber = callsite
-        ? `${chalk.underline(
-            `${trace.file}:${trace.lineNumber}:${trace.column}`
-          )}`
+        ? `${chalk.underline(`${trace.file}:${trace.lineNumber}:${trace.column}`)}`
         : ''
       const start = Math.max(0, lineNumber - 5)
       const fs = require('fs')
       if (fs.existsSync(fileName)) {
         const file = fs.readFileSync(fileName, 'utf-8')
-        const slicedFile = file
-          .split('\n')
-          .slice(start, lineNumber)
-          .join('\n')
+        const slicedFile = file.split('\n').slice(start, lineNumber).join('\n')
         const lines = stripIndents(slicedFile).split('\n')
 
         const theLine = lines[lines.length - 1]
@@ -71,22 +58,12 @@ export const printStack = ({ callsite }: ErrorArgs): PrintStackResult => {
           '\n' +
           highlightedLines
             .map(
-              (l, i) =>
-                chalk.grey(
-                  renderN(i + start + 1, lineNumber + start + 1) + ' '
-                ) +
-                chalk.reset() +
-                l
+              (l, i) => chalk.grey(renderN(i + start + 1, lineNumber + start + 1) + ' ') + chalk.reset() + l
             )
-            .map((l, i, arr) =>
-              i === arr.length - 1
-                ? `${chalk.red.bold('→')} ${l}`
-                : chalk.dim('  ' + l)
-            )
+            .map((l, i, arr) => (i === arr.length - 1 ? `${chalk.red.bold('→')} ${l}` : chalk.dim('  ' + l)))
             .join('\n')
         afterLines = ')'
-        indentValue =
-          String(lineNumber + start + 1).length + getIndent(theLine) + 1
+        indentValue = String(lineNumber + start + 1).length + getIndent(theLine) + 1
       }
     }
   }

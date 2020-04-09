@@ -14,33 +14,16 @@ export async function e2eTestPlugin(
   if (!opts?.withoutMigration) {
     console.log('Create migration file...')
     const dbMigrateSaveResult = await ctx
-      .spawn([
-        'yarn',
-        'prisma',
-        'migrate',
-        'save',
-        '--create-db',
-        '--name="init"',
-        '--experimental',
-      ])
+      .spawn(['yarn', 'prisma', 'migrate', 'save', '--create-db', '--name="init"', '--experimental'])
       .refCount()
       .pipe(bufferOutput)
       .toPromise()
 
-    expect(stripAnsi(dbMigrateSaveResult)).toContain(
-      'Prisma Migrate just created your migration'
-    )
+    expect(stripAnsi(dbMigrateSaveResult)).toContain('Prisma Migrate just created your migration')
 
     console.log('Apply migration...')
     const dbMigrateUpResult = await ctx
-      .spawn([
-        'yarn',
-        'prisma',
-        'migrate',
-        'up',
-        '--auto-approve',
-        '--experimental',
-      ])
+      .spawn(['yarn', 'prisma', 'migrate', 'up', '--auto-approve', '--experimental'])
       .refCount()
       .pipe(bufferOutput)
       .toPromise()
@@ -48,11 +31,7 @@ export async function e2eTestPlugin(
     expect(stripAnsi(dbMigrateUpResult)).toContain('Done with 1 migration')
   }
 
-  await ctx
-    .spawn(['yarn', 'prisma', 'generate'])
-    .refCount()
-    .pipe(bufferOutput)
-    .toPromise()
+  await ctx.spawn(['yarn', 'prisma', 'generate']).refCount().pipe(bufferOutput).toPromise()
 
   if (!opts?.withoutSeed) {
     const seedResult = await ctx
@@ -68,9 +47,7 @@ export async function e2eTestPlugin(
   let sub: Subscription = proc.connect()
 
   // Run nexus dev and query graphql api
-  await proc
-    .pipe(takeUntilServerListening)
-    .toPromise()
+  await proc.pipe(takeUntilServerListening).toPromise()
 
   const queryResult: { worlds: any[] } = await ctx.client.request(`{
     worlds {
@@ -82,7 +59,7 @@ export async function e2eTestPlugin(
   const introspectionResult = await ctx.client.request(introspectionQuery)
 
   expect(queryResult.worlds.length).toStrictEqual(2)
-  queryResult.worlds.forEach(r => {
+  queryResult.worlds.forEach((r) => {
     expect(r).toHaveProperty('id')
     expect(r).toHaveProperty('name')
     expect(r).toHaveProperty('population')
@@ -104,10 +81,7 @@ export async function e2eTestPlugin(
   expect(fs.exists(nexusPrismaTypegenPath)).toStrictEqual('file')
 
   // Run nexus build
-  const buildOutput = await ctx
-    .nexus(['build'])
-    .pipe(refCount(), bufferOutput)
-    .toPromise()
+  const buildOutput = await ctx.nexus(['build']).pipe(refCount(), bufferOutput).toPromise()
 
   expect(buildOutput).toContain('success')
 }

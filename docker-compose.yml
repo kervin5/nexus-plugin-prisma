@@ -4,7 +4,7 @@ services:
   mysql:
     image: mysql:5.7
     volumes:
-      - "./.mysql-data/db:/var/lib/mysql"
+      - './.mysql-data/db:/var/lib/mysql'
     restart: always
     ports:
       - 4567:3306
@@ -13,7 +13,7 @@ services:
   postgres:
     image: postgres:10.12
     volumes:
-      - "./.postgres-data/db:/var/lib/postgresql/data"
+      - './.postgres-data/db:/var/lib/postgresql/data'
     restart: always
     ports:
       - 5432:5432
