@@ -4466,10 +4466,10 @@ nexus-prisma@^0.12.0:
     fs-extra "^8.1.0"
     pluralize "^8.0.0"
 
-nexus@0.20.0-next.31:
-  version "0.20.0-next.31"
-  resolved "https://registry.yarnpkg.com/nexus/-/nexus-0.20.0-next.31.tgz#734fa9c989c2d4893a46566e3be4d949bc280fef"
-  integrity sha512-2y843XhVkxHx/tnJyKh9fhUaAC0Ry69hNswnBOmAafwkbrGZrZihIhs0JjrtOL4dFvEVu9AuhyFF4IPg+797Ww==
+nexus@0.20.0-next.32:
+  version "0.20.0-next.32"
+  resolved "https://registry.yarnpkg.com/nexus/-/nexus-0.20.0-next.32.tgz#25275fa6669ae9edbb31e2860450859d248091c2"
+  integrity sha512-Xzas8VcB9e/Qw8JjxPIrE6Ra8nHnwHhOjSoJL/xHiEGlH494FmRUdCFvQlZo9n83NWOBSzZC3jV8HNd7r6UCug==
   dependencies:
     "@nexus/schema" "^0.14.0-next.1"
     "@types/express" "^4.17.2"
