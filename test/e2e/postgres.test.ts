@@ -1,12 +1,15 @@
 import { createE2EContext } from 'nexus/dist/lib/e2e-testing'
 import { getTmpDir } from 'nexus/dist/lib/fs'
 import * as Path from 'path'
-import stripAnsi from 'strip-ansi'
-import { e2eTestPlugin } from './helpers'
+import { refCount } from 'rxjs/operators'
+import { e2eTestPlugin } from '../__helpers/e2e/testing'
+import { bufferOutput, takeUntilServerListening } from '../__helpers/e2e/utils'
 
 const tmpDir = getTmpDir()
 const ctx = createE2EContext({
   dir: Path.join(tmpDir, 'postgres'),
+  localNexus: null,
+  serverPort: 4000,
 })
 
 test('e2e with postgres', async () => {
@@ -15,19 +18,16 @@ test('e2e with postgres', async () => {
   let nexusVersion = process.env.NEXUS_VERSION ?? 'next'
 
   // Run npx nexus from local path
-  const initResult = await ctx.npxNexusCreateApp(
-    {
+  const initResult = await ctx
+    .npxNexusCreateApp({
       packageManagerType: 'npm',
       databaseType: 'PostgreSQL',
       nexusVersion,
-    },
-    () => {}
-  )
+    })
+    .pipe(refCount(), takeUntilServerListening, bufferOutput)
+    .toPromise()
 
-  expect(stripAnsi(initResult.data)).toContain(
-    'Run `npm run -s dev` to start working'
-  )
-  expect(initResult.exitCode).toStrictEqual(0)
+  expect(initResult).toContain('Run `npm run -s dev` to start working')
 
   await e2eTestPlugin(ctx)
 })

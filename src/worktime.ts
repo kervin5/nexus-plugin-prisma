@@ -17,7 +17,7 @@ if (process.env.LINK) {
 export const PRISMA_QUERY_ENGINE_VERSION: string = require('@prisma/cli/package.json')
   .prisma.version
 
-export const plugin: WorktimePlugin = p => {
+export const plugin: WorktimePlugin = () => p => {
   let elapsedMsSinceRestart = Date.now()
 
   p.log.trace('start')
@@ -141,6 +141,16 @@ export const plugin: WorktimePlugin = p => {
               })
             `
       ),
+      fs.writeAsync(
+        p.layout.sourcePath('app.ts'),
+        stripIndent`
+          import { use } from 'nexus'
+          import { prisma } from 'nexus-plugin-prisma'
+
+          // Enables the Prisma plugin
+          use(prisma())
+        `
+      )
     ])
     if (hctx.connectionURI || hctx.database === 'SQLite') {
       p.log.info('Initializing development database...')
@@ -235,6 +245,7 @@ export const plugin: WorktimePlugin = p => {
       },
     },
   }
+
   return plugin
 }
 

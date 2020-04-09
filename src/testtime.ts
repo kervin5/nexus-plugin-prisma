@@ -5,7 +5,7 @@ if (process.env.LINK) {
   process.env.NEXUS_PRISMA_LINK = process.env.LINK
 }
 
-export const plugin: TesttimePlugin = () => {
+export const plugin: TesttimePlugin = () => () => {
   const plugin = () => {
     return {
       app: {

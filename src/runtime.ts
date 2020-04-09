@@ -1,6 +1,6 @@
 import chalk from 'chalk'
-import { RuntimePlugin } from 'nexus/plugin'
 import { nexusPrismaPlugin, Options as NexusPrismaOptions } from 'nexus-prisma'
+import { RuntimePlugin } from 'nexus/plugin'
 import * as Path from 'path'
 import { suggestionList } from './lib/levenstein'
 import { linkableProjectDir } from './lib/linkable'
@@ -33,7 +33,7 @@ interface OptionsWithHook extends NexusPrismaOptions {
   onUnknownFieldType: (params: UnknownFieldType) => void
 }
 
-export const plugin: RuntimePlugin = project => {
+export const plugin: RuntimePlugin = () => project => {
   const prismaClientInstance = getPrismaClientInstance()
   const prismaClientDir = getPrismaClientDir()
   const nexusPrismaTypegenOutput = Path.join(
@@ -65,7 +65,7 @@ export const plugin: RuntimePlugin = project => {
         // ],
       },
     },
-    nexus: {
+    schema: {
       typegenAutoConfig: {
         // https://github.com/prisma-labs/nexus-prisma/blob/master/examples/hello-world/app.ts#L14
         sources: [
