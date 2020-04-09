@@ -47,7 +47,7 @@
     "@types/jest": "25.1.4",
     "@types/prismjs": "1.16.0",
     "dripip": "0.8.0",
-    "jest": "25.2.2",
+    "jest": "25.3.0",
     "jest-watch-typeahead": "0.4.2",
     "nexus": "0.20.0-next.31",
     "node-fetch": "2.6.0",
