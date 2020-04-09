@@ -15,7 +15,7 @@ const ctx = createE2EContext({
   serverPort: 4000,
 })
 
-test('e2e with mysql', async () => {
+test('e2e', async () => {
   console.log(ctx.dir)
 
   let nexusVersion = process.env.NEXUS_VERSION ?? 'next'

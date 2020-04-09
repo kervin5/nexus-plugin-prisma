@@ -69,31 +69,38 @@ export const plugin: WorktimePlugin = () => (p) => {
       fs.writeAsync(
         'prisma/seed.ts',
         stripIndent`
-              import { PrismaClient } from '@prisma/client'
-  
-              const db = new PrismaClient()
-              
-              main()
-              
-              async function main() {
-                const results = await Promise.all(
-                  [
-                    {
-                      name: 'Earth',
-                      population: 6_000_000_000,
-                    },
-                    {
-                      name: 'Mars',
-                      population: 0,
-                    },
-                  ].map(data => db.world.create({ data })),
-                )
-              
-                console.log('Seeded: %j', results)
-              
-                db.disconnect()
-              }
-            `
+          import { PrismaClient } from '@prisma/client'
+
+          const db = new PrismaClient()
+          
+          main()
+          
+          async function main() {
+            const worlds = [
+              {
+                name: 'Earth',
+                population: 6_000_000_000,
+              },
+              {
+                name: 'Mars',
+                population: 0,
+              },
+            ]
+
+            // Could use Promise.all
+            // Sequential here so that world IDs match the array order above
+
+            let results = []
+
+            for (const world of worlds) {
+              results.push(await db.world.create({ data: world }))
+            }
+
+            console.log('Seeded: %j', results)
+          
+            db.disconnect()
+          }
+        `
       ),
       fs.writeAsync(
         p.layout.sourcePath('graphql.ts'),

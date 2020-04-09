@@ -1,6 +1,23 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`e2e with postgres: introspection 1`] = `
+exports[`e2e: worlds-query 1`] = `
+Object {
+  "worlds": Array [
+    Object {
+      "id": 1,
+      "name": "Earth",
+      "population": 6000000000,
+    },
+    Object {
+      "id": 2,
+      "name": "Mars",
+      "population": 0,
+    },
+  ],
+}
+`;
+
+exports[`e2e: introspection 1`] = `
 Object {
   "__schema": Object {
     "directives": Array [

@@ -1,11 +1,11 @@
+import * as fs from 'fs-jetpack'
 import { introspectionQuery } from 'graphql'
 import { createE2EContext } from 'nexus/dist/lib/e2e-testing'
-import stripAnsi from 'strip-ansi'
 import * as Path from 'path'
-import * as fs from 'fs-jetpack'
-import { bufferOutput, takeUntilServerListening } from './utils'
-import { Subscription, ConnectableObservable } from 'rxjs'
+import { ConnectableObservable, Subscription } from 'rxjs'
 import { refCount } from 'rxjs/operators'
+import stripAnsi from 'strip-ansi'
+import { bufferOutput, takeUntilServerListening } from './utils'
 
 export async function e2eTestPlugin(
   ctx: ReturnType<typeof createE2EContext>,
@@ -56,14 +56,10 @@ export async function e2eTestPlugin(
       population
     }
   }`)
-  const introspectionResult = await ctx.client.request(introspectionQuery)
 
-  expect(queryResult.worlds.length).toStrictEqual(2)
-  queryResult.worlds.forEach((r) => {
-    expect(r).toHaveProperty('id')
-    expect(r).toHaveProperty('name')
-    expect(r).toHaveProperty('population')
-  })
+  expect(queryResult).toMatchSnapshot('worlds-query')
+
+  const introspectionResult = await ctx.client.request(introspectionQuery)
 
   expect(introspectionResult).toMatchSnapshot('introspection')
 
