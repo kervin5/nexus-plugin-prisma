@@ -1,5 +1,10 @@
 import * as Path from 'path'
 import { linkableRequire, linkableResolve } from './linkable'
+/**
+ * Makes sure `@prisma/client` is copied to ZEIT Now by statically requiring `@prisma/client`
+ * We do not use this import because we need to require the Prisma Client using `linkableRequire`.
+ */
+require('@prisma/client')
 
 let prismaClientInstance: object | null = null
 
