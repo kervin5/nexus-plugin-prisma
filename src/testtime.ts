@@ -6,12 +6,12 @@ if (process.env.LINK) {
   process.env.NEXUS_PRISMA_LINK = process.env.LINK
 }
 
-export const plugin: TesttimePlugin<Settings> = (settings) => () => {
+export const plugin: TesttimePlugin<Settings> = (settings) => (project) => {
   const plugin = () => {
     return {
       app: {
         db: {
-          client: getPrismaClientInstance(settings?.clientOptions),
+          client: getPrismaClientInstance(settings?.client, project.log),
         },
       },
     }

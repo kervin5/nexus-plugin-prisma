@@ -9,12 +9,14 @@
   "files": [
     "dist",
     "scripts",
-    "global-type.d.ts"
+    "global-type.d.ts",
+    "client.d.ts",
+    "client.js"
   ],
   "scripts": {
     "format": "prettier --write .",
-    "dev": "tsc --watch",
-    "build": "yarn clean && node scripts/update-hash.js && tsc",
+    "dev": "node scripts/build-module-facades && tsc --watch",
+    "build": "yarn clean && node scripts/update-hash.js && node scripts/build-module-facades && tsc",
     "build:ci": "tsc",
     "test": "jest",
     "test:e2e:mysql": "yarn test test/e2e/mysql.test.ts --testTimeout=400000",

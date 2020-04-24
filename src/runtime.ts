@@ -32,7 +32,7 @@ interface OptionsWithHook extends NexusPrismaOptions {
 }
 
 export const plugin: RuntimePlugin<Settings> = (settings) => (project) => {
-  const prismaClientInstance = getPrismaClientInstance(settings?.clientOptions)
+  const prismaClientInstance = getPrismaClientInstance(settings?.client, project.log)
   const prismaClientDir = getPrismaClientDir()
   const nexusPrismaTypegenOutput = Path.join(
     linkableProjectDir(),

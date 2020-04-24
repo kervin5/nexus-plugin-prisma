@@ -1,19 +1,51 @@
+import { PrismaClient } from '@prisma/client'
 import * as Path from 'path'
+import { Settings, PrismaClientOptions } from '../settings'
 import { linkableRequire, linkableResolve } from './linkable'
-import { Settings } from '../settings'
+import { RuntimeLens } from 'nexus/plugin'
 /**
  * Makes sure `@prisma/client` is copied to ZEIT Now by statically requiring `@prisma/client`
  * We do not use this import because we need to require the Prisma Client using `linkableRequire`.
  */
 require('@prisma/client')
 
-let prismaClientInstance: object | null = null
+let prismaClientInstance: PrismaClient | null = null
 
-export function getPrismaClientInstance(clientOptions: Settings['clientOptions']) {
-  if (!prismaClientInstance) {
+function isPrismaClient(clientInstance: any): clientInstance is PrismaClient {
+  const hasConnect = clientInstance && typeof clientInstance.connect === 'function'
+  const hasDisconnect = clientInstance && typeof clientInstance.disconnect === 'function'
+
+  return hasConnect && hasDisconnect
+}
+
+function isPrismaClientOptions(clientOrOptions: any): clientOrOptions is PrismaClientOptions {
+  return clientOrOptions && clientOrOptions.options !== null && typeof clientOrOptions.options === 'object'
+}
+
+function instantiatePrismaClient(clientOrOptions: Settings['client'], log: RuntimeLens['log']): PrismaClient {
+  if (!clientOrOptions) {
     const { PrismaClient } = linkableRequire('@prisma/client')
 
-    prismaClientInstance = clientOptions ? new PrismaClient(clientOptions) : new PrismaClient()
+    return new PrismaClient()
+  }
+
+  if (isPrismaClientOptions(clientOrOptions)) {
+    const { PrismaClient } = linkableRequire('@prisma/client')
+
+    return new PrismaClient(clientOrOptions.options)
+  }
+
+  if (!isPrismaClient(clientOrOptions.instance)) {
+    log.fatal('The Prisma Client instance you passed is not valid. Make sure it was generated.')
+    process.exit(1)
+  }
+
+  return clientOrOptions.instance
+}
+
+export function getPrismaClientInstance(clientOrOptions: Settings['client'], log: RuntimeLens['log']) {
+  if (!prismaClientInstance) {
+    prismaClientInstance = instantiatePrismaClient(clientOrOptions, log)
   }
 
   return prismaClientInstance
