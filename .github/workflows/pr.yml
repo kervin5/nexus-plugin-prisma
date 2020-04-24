@@ -21,7 +21,7 @@ jobs:
           echo '==> Publish Result'
           jq '.' <<< $result
 
-          if [ "$(jq -r '.kind' <<< $result)" == 'did_not_publish' ]; then
+          if [ "$(jq -r '.type' <<< $result)" == 'did_not_publish' ]; then
             echo '==> Stopping workflow because no release was made for this commit'
             # https://developer.github.com/v3/actions/workflow_runs/#cancel-a-workflow-run
             curl \
@@ -72,7 +72,7 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: published
-      - run: cat published/result.json | jq -r '.version'
+      - run: cat published/result.json | jq -r '.data.release.version'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
@@ -89,7 +89,7 @@ jobs:
         env:
           LOG_LEVEL: trace
         run: |
-          export NEXUS_PLUGIN_PRISMA_VERSION=$(cat published/result.json | jq -r '.version')
+          export NEXUS_PLUGIN_PRISMA_VERSION=$(cat published/result.json | jq -r '.data.release.version')
           if [ $NEXUS_PLUGIN_PRISMA_VERSION == '' ]; then
             echo "Failed to extract version"
             exit 1
