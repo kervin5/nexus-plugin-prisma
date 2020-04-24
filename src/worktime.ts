@@ -6,6 +6,7 @@ import * as fs from 'fs-jetpack'
 import { WorktimeLens, WorktimePlugin } from 'nexus/plugin'
 import * as os from 'os'
 import * as Path from 'path'
+import { Settings } from './settings'
 
 if (process.env.LINK) {
   process.env.NEXUS_PRISMA_LINK = process.env.LINK
@@ -16,7 +17,7 @@ if (process.env.LINK) {
  */
 export const PRISMA_QUERY_ENGINE_VERSION: string = require('@prisma/cli/package.json').prisma.version
 
-export const plugin: WorktimePlugin = () => (p) => {
+export const plugin: WorktimePlugin<Settings> = (_settings) => (p) => {
   let elapsedMsSinceRestart = Date.now()
 
   p.log.trace('start')

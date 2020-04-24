@@ -1,22 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`e2e: worlds-query 1`] = `
-Object {
-  "worlds": Array [
-    Object {
-      "id": 1,
-      "name": "Earth",
-      "population": 6000000000,
-    },
-    Object {
-      "id": 2,
-      "name": "Mars",
-      "population": 0,
-    },
-  ],
-}
-`;
-
 exports[`e2e: introspection 1`] = `
 Object {
   "__schema": Object {
@@ -1053,5 +1036,22 @@ In some cases, you need to provide options to alter GraphQL's execution behavior
       },
     ],
   },
+}
+`;
+
+exports[`e2e: worlds-query 1`] = `
+Object {
+  "worlds": Array [
+    Object {
+      "id": 1,
+      "name": "Earth",
+      "population": 6000000000,
+    },
+    Object {
+      "id": 2,
+      "name": "Mars",
+      "population": 0,
+    },
+  ],
 }
 `;

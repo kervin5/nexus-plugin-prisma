@@ -6,6 +6,7 @@ import { suggestionList } from './lib/levenstein'
 import { linkableProjectDir } from './lib/linkable'
 import { printStack } from './lib/print-stack'
 import { getPrismaClientDir, getPrismaClientInstance } from './lib/prisma-client'
+import { Settings } from './settings'
 
 if (process.env.LINK) {
   process.env.NEXUS_PRISMA_LINK = process.env.LINK
@@ -30,8 +31,8 @@ interface OptionsWithHook extends NexusPrismaOptions {
   onUnknownFieldType: (params: UnknownFieldType) => void
 }
 
-export const plugin: RuntimePlugin = () => (project) => {
-  const prismaClientInstance = getPrismaClientInstance()
+export const plugin: RuntimePlugin<Settings> = (settings) => (project) => {
+  const prismaClientInstance = getPrismaClientInstance(settings?.clientOptions)
   const prismaClientDir = getPrismaClientDir()
   const nexusPrismaTypegenOutput = Path.join(
     linkableProjectDir(),

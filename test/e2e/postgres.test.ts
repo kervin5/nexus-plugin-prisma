@@ -13,15 +13,18 @@ const ctx = createE2EContext({
 })
 
 test('e2e', async () => {
-  console.log(ctx.dir)
-
   let nexusVersion = process.env.NEXUS_VERSION ?? 'next'
+
+  if (!process.env.NEXUS_PLUGIN_PRISMA_VERSION) {
+    throw new Error('env var NEXUS_PLUGIN_PRISMA_VERSION must be set')
+  }
 
   // Run npx nexus from local path
   const initResult = await ctx
     .npxNexusCreateApp({
       packageManagerType: 'npm',
       databaseType: 'PostgreSQL',
+      prismaPluginVersion: process.env.NEXUS_PLUGIN_PRISMA_VERSION,
       nexusVersion,
     })
     .pipe(refCount(), takeUntilServerListening, bufferOutput)

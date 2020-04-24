@@ -12,15 +12,18 @@ const ctx = createE2EContext({
 })
 
 test('e2e', async () => {
-  console.log(ctx.dir)
-
   let nexusVersion = process.env.NEXUS_VERSION ?? 'next'
+
+  if (!process.env.NEXUS_PLUGIN_PRISMA_VERSION) {
+    throw new Error('env var NEXUS_PLUGIN_PRISMA_VERSION must be set')
+  }
 
   // Run npx nexus
   await ctx
     .npxNexusCreateApp({
       packageManagerType: 'npm',
       databaseType: 'SQLite',
+      prismaPluginVersion: process.env.NEXUS_PLUGIN_PRISMA_VERSION,
       nexusVersion,
     })
     .refCount()

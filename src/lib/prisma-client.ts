@@ -1,5 +1,6 @@
 import * as Path from 'path'
 import { linkableRequire, linkableResolve } from './linkable'
+import { Settings } from '../settings'
 /**
  * Makes sure `@prisma/client` is copied to ZEIT Now by statically requiring `@prisma/client`
  * We do not use this import because we need to require the Prisma Client using `linkableRequire`.
@@ -8,11 +9,11 @@ require('@prisma/client')
 
 let prismaClientInstance: object | null = null
 
-export function getPrismaClientInstance() {
+export function getPrismaClientInstance(clientOptions: Settings['clientOptions']) {
   if (!prismaClientInstance) {
     const { PrismaClient } = linkableRequire('@prisma/client')
 
-    prismaClientInstance = new PrismaClient()
+    prismaClientInstance = clientOptions ? new PrismaClient(clientOptions) : new PrismaClient()
   }
 
   return prismaClientInstance
