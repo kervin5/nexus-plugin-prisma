@@ -851,12 +851,12 @@
   resolved "https://registry.yarnpkg.com/@prisma-labs/prettier-config/-/prettier-config-0.1.0.tgz#ef6cb5f89487974ca997516e9b39d5ccbefeeaad"
   integrity sha512-P0h2y+gnIxFP2HdsTYSYHWmabGBlxyVjnUepsrRe8gAF36mxOonGsbsQmKt/Q9H9CMjrSkFoDe5F5HLi2iW5/Q==
 
-"@prisma/cli@^2.0.0-beta.3":
+"@prisma/cli@2.0.0-beta.3":
   version "2.0.0-beta.3"
   resolved "https://registry.yarnpkg.com/@prisma/cli/-/cli-2.0.0-beta.3.tgz#54ac441bd538aade10acb07912b6751698c766df"
   integrity sha512-VZxeTLLMenhkAyaY4tvTqChcW6QtUkiVvZj7N6A2vi6HsM1Tnf0fIZsiH1h3e/LEnaaDGIUC8F4Gkh2SeyeyCg==
 
-"@prisma/client@^2.0.0-beta.3":
+"@prisma/client@2.0.0-beta.3":
   version "2.0.0-beta.3"
   resolved "https://registry.yarnpkg.com/@prisma/client/-/client-2.0.0-beta.3.tgz#a1b2cce4744973481d2891fcb919ab099f118952"
   integrity sha512-itwRDl9PS8pD9InbHFeh1m3kyMibpZbkMHx9/Q7lNVaxvBJeJjNlVFmclL9AIFMDAUhD+KtspqkBwUHKgJpd7g==
@@ -915,7 +915,7 @@
   dependencies:
     debug "^4.1.1"
 
-"@prisma/sdk@^2.0.0-beta.3":
+"@prisma/sdk@2.0.0-beta.3":
   version "2.0.0-beta.3"
   resolved "https://registry.yarnpkg.com/@prisma/sdk/-/sdk-2.0.0-beta.3.tgz#7b8ec74e66124937fbd7cd1089a963b7d03c24b5"
   integrity sha512-0qf2jLqBGlx/Lm+7HVoki/cnBDs9OE32KoJR2RcTJpwJCKqZaiyvS8sYQtDM1F3xiI1A5BjWOA77EHNxTfnDaA==
