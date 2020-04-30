@@ -1,8 +1,8 @@
 import { PrismaClient } from '@prisma/client'
-import * as Path from 'path'
-import { Settings, PrismaClientOptions } from '../settings'
-import { linkableRequire, linkableResolve } from './linkable'
 import { RuntimeLens } from 'nexus/plugin'
+import * as Path from 'path'
+import { PrismaClientOptions, Settings } from '../settings'
+import { linkableRequire, linkableResolve } from './linkable'
 /**
  * Makes sure `@prisma/client` is copied to ZEIT Now by statically requiring `@prisma/client`
  * We do not use this import because we need to require the Prisma Client using `linkableRequire`.
@@ -55,5 +55,5 @@ export function getPrismaClientInstance(clientOrOptions: Settings['client'], log
 // 1. https://prisma-company.slack.com/archives/C8AKVD5HU/p1574267904197600
 // 2. https://prisma-company.slack.com/archives/CEYCG2MCN/p1574267824465700
 export function getPrismaClientDir() {
-  return Path.dirname(linkableResolve('@prisma/client'))
+  return Path.dirname(linkableResolve('.prisma/client'))
 }
