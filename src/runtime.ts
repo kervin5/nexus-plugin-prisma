@@ -53,14 +53,22 @@ export const plugin: RuntimePlugin<Settings> = (settings) => (project) => {
         fields: {
           db: 'Prisma.PrismaClient',
         },
-        // import not needed here because it will already be from the
-        // typegenAutoConfig below
-        // imports: [
-        //   {
-        //     as: 'Photon',
-        //     from: GENERATED_PHOTON_OUTPUT_PATH,
-        //   },
-        // ],
+        /**
+         * Prisma import is needed both here and below in typegenAutoConfig.
+         * That's because @nexus/schema removes the import when no types match the source.
+         * This import guarantees that the prisma client import is always there, for the context type.
+         * If both the imports from the plugin and from typegenAutoConfig are present, Nexus will ignore the plugin one
+         *
+         * TODO: This is bad and needs a refactor.
+         * Either @nexus/schema should support a `force` boolean to always have the import there
+         * Or it should support dynamic contexts
+         */
+        imports: [
+          {
+            as: 'Prisma',
+            from: Path.join(prismaClientDir, 'index.d.ts'),
+          },
+        ],
       },
     },
     schema: {
