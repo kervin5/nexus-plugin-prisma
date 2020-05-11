@@ -654,6 +654,15 @@
     call-me-maybe "^1.0.1"
     glob-to-regexp "^0.3.0"
 
+"@nexus/logger@^0.1.0-next.1":
+  version "0.1.0-next.4"
+  resolved "https://registry.yarnpkg.com/@nexus/logger/-/logger-0.1.0-next.4.tgz#2dc7e27a1b8e21b67effaa039fed9eec4dddd195"
+  integrity sha512-cjA9yHpxGqT6pVzZWN4mPsqKAUBH5XPCzz/l03/RHMyOocR/yXrRginiL2nKwThff6wU9GQctizGJ1aetwy03A==
+  dependencies:
+    chalk "^4.0.0"
+    lodash "^4.17.15"
+    strip-ansi "^6.0.0"
+
 "@nexus/schema@^0.14.0-next.1":
   version "0.14.0-next.1"
   resolved "https://registry.yarnpkg.com/@nexus/schema/-/schema-0.14.0-next.1.tgz#ea822ce28fe914ff5167962d786bb803ee1e37e6"
@@ -1293,7 +1302,7 @@ abab@^2.0.0:
   resolved "https://registry.yarnpkg.com/abab/-/abab-2.0.3.tgz#623e2075e02eb2d3f2475e49f99c91846467907a"
   integrity sha512-tsFzPpcttalNjFBCFMqsKYQcWxxen1pgJR56by//QwvJc4/OUS3kPOOttx2tSIfjsylB0pYu7f5D3K1RCxUnUg==
 
-accepts@^1.3.7, accepts@~1.3.7:
+accepts@~1.3.7:
   version "1.3.7"
   resolved "https://registry.yarnpkg.com/accepts/-/accepts-1.3.7.tgz#531bc726517a3b2b41f850021c6cc15eaab507cd"
   integrity sha512-Il80Qs2WjYlJIBNzNkK6KYqlVMTbZLXgHx2oT0pU/fjRHyEp+PEfEPY0R3WCwAGVOtauxh1hOxNgIf5bv7dQpA==
@@ -2624,16 +2633,6 @@ expect@^25.5.0:
     jest-message-util "^25.5.0"
     jest-regex-util "^25.2.6"
 
-express-graphql@^0.9.0:
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/express-graphql/-/express-graphql-0.9.0.tgz#00fd8552f866bac5c9a4612b2c4c82076107b3c2"
-  integrity sha512-wccd9Lb6oeJ8yHpUs/8LcnGjFUUQYmOG9A5BNLybRdCzGw0PeUrtBxsIR8bfiur6uSW4OvPkVDoYH06z6/N9+w==
-  dependencies:
-    accepts "^1.3.7"
-    content-type "^1.0.4"
-    http-errors "^1.7.3"
-    raw-body "^2.4.1"
-
 express@^4.17.1:
   version "4.17.1"
   resolved "https://registry.yarnpkg.com/express/-/express-4.17.1.tgz#4491fc38605cf51f8629d39c2b5d026f98a4c134"
@@ -2866,6 +2865,11 @@ forwarded@~0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/forwarded/-/forwarded-0.1.2.tgz#98c23dab1175657b8c0573e8ceccd91b0ff18c84"
   integrity sha1-mMI9qxF1ZXuMBXPozszZGw/xjIQ=
+
+fp-ts@^2.5.4:
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/fp-ts/-/fp-ts-2.6.0.tgz#55dc9e82612a44a7bfed3484b18c535514d63e51"
+  integrity sha512-4EKVa3EOP3NoDwXCLgSCT2t+E2wPCWDXCuj3wEcQ1ovkLfdCMxKxCuElpXptIPBmtA+KbjnUl5Ta/1U3jsCmkg==
 
 fragment-cache@^0.2.1:
   version "0.2.1"
@@ -3197,7 +3201,7 @@ http-errors@1.7.2:
     statuses ">= 1.5.0 < 2"
     toidentifier "1.0.0"
 
-http-errors@1.7.3, http-errors@^1.7.3, http-errors@~1.7.2:
+http-errors@^1.7.3, http-errors@~1.7.2:
   version "1.7.3"
   resolved "https://registry.yarnpkg.com/http-errors/-/http-errors-1.7.3.tgz#6c619e4f9c60308c38519498c14fbb10aacebb06"
   integrity sha512-ZTTX0MWrsQ2ZAhA1cejAwDLycFsd7I7nVtnkT3Ol0aqodaKW+0CTZDQ1uBv5whptCnc8e8HeRRJxRs0kmm/Qfw==
@@ -4558,11 +4562,12 @@ nexus-prisma@^0.13.0-next.2:
     fs-extra "^9.0.0"
     pluralize "^8.0.0"
 
-nexus@0.21.0-next.4:
-  version "0.21.0-next.4"
-  resolved "https://registry.yarnpkg.com/nexus/-/nexus-0.21.0-next.4.tgz#561450deb3dedace2737c09a6fe81408656ddfee"
-  integrity sha512-ZpKUU4CoX2jxb+fwcfHhmdhVqWH4uukDevDE1kjI9bvNx6OrZYIFxJbXWw0FFCxyubhnIWmWfN5cpPYyVYZRkg==
+nexus@^0.22.0-next.7:
+  version "0.22.0-next.7"
+  resolved "https://registry.yarnpkg.com/nexus/-/nexus-0.22.0-next.7.tgz#bf3c07887f9c6c6f56b5dbeb7d097c6b1971df82"
+  integrity sha512-gKz2gMkku4a4ziXMXHlD3f3wt4BJuskD76OeMUTsuHHvKw7VsxbED3jLXTTW4Kfqlo0hOX3bKytsOGaMWZYQMQ==
   dependencies:
+    "@nexus/logger" "^0.1.0-next.1"
     "@nexus/schema" "^0.14.0-next.1"
     "@types/express" "^4.17.2"
     "@types/node-fetch" "^2.5.5"
@@ -4574,21 +4579,25 @@ nexus@0.21.0-next.4:
     chokidar "^3.3.0"
     codename "^0.0.6"
     common-tags "^1.8.0"
+    content-type "^1.0.4"
     dotenv "^8.2.0"
     express "^4.17.1"
-    express-graphql "^0.9.0"
+    fp-ts "^2.5.4"
     fs-jetpack "^2.2.3"
     get-port "^5.1.0"
     graphql "^14.5.8"
+    http-errors "^1.7.3"
     lodash "^4.17.15"
     node-fetch "^2.6.0"
     pino "^5.15.0"
+    pirates "^4.0.1"
     prompts "^2.3.0"
     rxjs "^6.5.4"
+    serialize-error "^7.0.0"
     simple-git "^1.126.0"
     strip-ansi "^6.0.0"
     ts-morph "^7.0.0"
-    ts-node "^8.5.0"
+    ts-node "^8.9.0"
     tslib "^1"
     type-fest "^0.13.0"
     typescript "^3.7.2"
@@ -5120,16 +5129,6 @@ raw-body@2.4.0:
     iconv-lite "0.4.24"
     unpipe "1.0.0"
 
-raw-body@^2.4.1:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/raw-body/-/raw-body-2.4.1.tgz#30ac82f98bb5ae8c152e67149dac8d55153b168c"
-  integrity sha512-9WmIKF6mkvA0SLmA2Knm9+qj89e+j1zqgyn8aXGd7+nAduPoqgI9lO57SAZNn/Byzo5P7JhXTyg9PzaJbH73bA==
-  dependencies:
-    bytes "3.1.0"
-    http-errors "1.7.3"
-    iconv-lite "0.4.24"
-    unpipe "1.0.0"
-
 react-is@^16.12.0:
   version "16.12.0"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.12.0.tgz#2cc0fe0fba742d97fd527c42a13bec4eeb06241c"
@@ -5451,6 +5450,13 @@ send@0.17.1:
     range-parser "~1.2.1"
     statuses "~1.5.0"
 
+serialize-error@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/serialize-error/-/serialize-error-7.0.0.tgz#10a00c5ad7806d7b84619a5599ea443bdf1bb0d8"
+  integrity sha512-xDtzsA4FzjMMfA6bhhbnkXPYS/CA34+TjO9YKf4nas10Akb3HWYfr6nKwHYxV0xO5Qr9dWb3OmohojEfWuhoUg==
+  dependencies:
+    type-fest "^0.13.1"
+
 serve-static@1.14.1:
   version "1.14.1"
   resolved "https://registry.yarnpkg.com/serve-static/-/serve-static-1.14.1.tgz#666e636dc4f010f7ef29970a88a674320898b2f9"
@@ -5621,6 +5627,14 @@ source-map-resolve@^0.5.0:
     resolve-url "^0.2.1"
     source-map-url "^0.4.0"
     urix "^0.1.0"
+
+source-map-support@^0.5.17:
+  version "0.5.19"
+  resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.5.19.tgz#a98b62f86dcaf4f67399648c085291ab9e8fed61"
+  integrity sha512-Wonm7zOCIJzBGQdB+thsPar0kYuCIzYvxZwlBa87yi/Mdjv7Tip2cyVbLj5o0cFPN4EVkuTwb3GDDyUx2DGnGw==
+  dependencies:
+    buffer-from "^1.0.0"
+    source-map "^0.6.0"
 
 source-map-support@^0.5.6:
   version "0.5.16"
@@ -6075,15 +6089,15 @@ ts-morph@^7.0.0:
     "@ts-morph/common" "~0.4.0"
     code-block-writer "^10.1.0"
 
-ts-node@^8.5.0:
-  version "8.8.2"
-  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-8.8.2.tgz#0b39e690bee39ea5111513a9d2bcdc0bc121755f"
-  integrity sha512-duVj6BpSpUpD/oM4MfhO98ozgkp3Gt9qIp3jGxwU2DFvl/3IRaEAvbLa8G60uS7C77457e/m5TMowjedeRxI1Q==
+ts-node@^8.9.0:
+  version "8.10.1"
+  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-8.10.1.tgz#77da0366ff8afbe733596361d2df9a60fc9c9bd3"
+  integrity sha512-bdNz1L4ekHiJul6SHtZWs1ujEKERJnHs4HxN7rjTyyVOFf3HaJ6sLqe6aPG62XTzAB/63pKRh5jTSWL0D7bsvw==
   dependencies:
     arg "^4.1.0"
     diff "^4.0.1"
     make-error "^1.1.1"
-    source-map-support "^0.5.6"
+    source-map-support "^0.5.17"
     yn "3.1.1"
 
 tslib@1.11.1, tslib@^1, tslib@^1.9.0:
@@ -6125,7 +6139,7 @@ type-fest@^0.12.0:
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-0.12.0.tgz#f57a27ab81c68d136a51fd71467eff94157fa1ee"
   integrity sha512-53RyidyjvkGpnWPMF9bQgFtWp+Sl8O2Rp13VavmJgfAP9WWG6q6TkrKU8iyJdnwnfgHI6k2hTlgqH4aSdjoTbg==
 
-type-fest@^0.13.0:
+type-fest@^0.13.0, type-fest@^0.13.1:
   version "0.13.1"
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-0.13.1.tgz#0172cb5bce80b0bd542ea348db50c7e21834d934"
   integrity sha512-34R7HTnG0XIJcBSn5XhDd7nNFPRcXYRZrBB2O2jdKqYODldSzBAqzsWoZYYvduky73toYS/ESqxPvkDf/F0XMg==
