@@ -33,7 +33,7 @@ test('e2e', async () => {
     .pipe(refCount(), takeUntilServerListening, bufferOutput)
     .toPromise()
 
-  expect(initResult).toContain('Run `npm run -s dev` to start working')
+  expect(initResult).toContain('Run `yarn -s dev` to start working')
 
   // Update database credentials
   const prismaSchemaContent = FS.read(envPath)!.replace(
