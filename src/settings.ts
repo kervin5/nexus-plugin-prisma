@@ -22,4 +22,10 @@ export type Settings = {
    * Use this to pass some settings to the Prisma Client instantiated by the plugin or to pass your own Prisma Client
    */
   client?: PrismaClientOptions | PrismaClientInstance
+  /**
+   * Enable or disable migrations run by the plugin when editing your schema.prisma file
+   * 
+   * @default true
+   */
+  migrations?: boolean
 }

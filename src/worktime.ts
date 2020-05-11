@@ -7,6 +7,7 @@ import { WorktimeLens, WorktimePlugin } from 'nexus/plugin'
 import * as os from 'os'
 import * as Path from 'path'
 import { Settings } from './settings'
+import { withDefaults } from './lib/defaults'
 
 if (process.env.LINK) {
   process.env.NEXUS_PRISMA_LINK = process.env.LINK
@@ -17,8 +18,10 @@ if (process.env.LINK) {
  */
 export const PRISMA_QUERY_ENGINE_VERSION: string = require('@prisma/cli/package.json').prisma.version
 
-export const plugin: WorktimePlugin<Settings> = (_settings) => (p) => {
-  let elapsedMsSinceRestart = Date.now()
+export const plugin: WorktimePlugin<Settings> = (userSettings) => (p) => {
+  const settings = withDefaults(userSettings, {
+    migrations: true,
+  })
 
   p.log.trace('start')
 
@@ -213,21 +216,18 @@ export const plugin: WorktimePlugin<Settings> = (_settings) => (p) => {
     await runPrismaGenerators(p)
   }
 
-  p.hooks.dev.onAfterWatcherRestart = () => {
-    elapsedMsSinceRestart = Date.now()
-  }
-
   p.hooks.dev.onFileWatcherEvent = async (_event, file, _stats, watcher) => {
+    p.log.info('settings', { settings })
     if (file.match(/.*schema\.prisma$/)) {
-      // Prevent from prompting twice when some updates to the schema are queued while the prompt is shown
-      const elapsed = Date.now() - elapsedMsSinceRestart
-      if (elapsed < 50) {
-        return
+      if (settings.migrations === true) {
+        await promptForMigration(p, watcher, file)
+      } else {
+        await runPrismaGenerators(p)
+        watcher.restart(file)
       }
-
-      await promptForMigration(p, watcher, file)
     }
   }
+
   p.hooks.dev.addToWatcherSettings = {
     // TODO preferably we allow schema.prisma to be anywhere but they show up in
     // migrations folder too and we don't know how to achieve semantic "anywhere
