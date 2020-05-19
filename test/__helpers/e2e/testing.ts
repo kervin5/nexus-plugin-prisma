@@ -49,6 +49,9 @@ export async function e2eTestPlugin(
   // Run nexus dev and query graphql api
   await proc.pipe(takeUntilServerListening).toPromise()
 
+  // Wait some arbitrary time to make sure typegen has time to be persisted to the filesystem
+  await new Promise((res) => setTimeout(res, 2000))
+
   const queryResult: { worlds: any[] } = await ctx.client.request(`{
     worlds {
       id

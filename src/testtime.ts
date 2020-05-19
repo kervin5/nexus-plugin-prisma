@@ -7,15 +7,11 @@ if (process.env.LINK) {
 }
 
 export const plugin: TesttimePlugin<Settings> = (settings) => (project) => {
-  const plugin = () => {
-    return {
-      app: {
-        db: {
-          client: getPrismaClientInstance(settings?.client, project.log),
-        },
+  return {
+    app: {
+      db: {
+        client: getPrismaClientInstance(settings?.client, project.log),
       },
-    }
+    },
   }
-
-  return plugin
 }
