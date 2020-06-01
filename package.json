@@ -16,9 +16,11 @@
   "scripts": {
     "format": "prettier --write .",
     "dev": "node scripts/build-module-facades && tsc --watch",
+    "dev:test": "jest --watch src",
     "build": "yarn clean && node scripts/update-hash.js && node scripts/build-module-facades && tsc",
     "build:ci": "tsc",
     "test": "jest",
+    "test:unit": "jest src --forceExit",
     "test:e2e:mysql": "yarn test test/e2e/mysql.test.ts --testTimeout=400000",
     "test:e2e:postgres": "yarn test test/e2e/postgres.test.ts --testTimeout=400000",
     "test:e2e:sqlite": "yarn test test/e2e/sqlite.test.ts --testTimeout=400000",
@@ -59,7 +61,7 @@
     "prettier": "2.0.4",
     "pretty-quick": "2.0.1",
     "rxjs": "6.5.5",
-    "strip-ansi": "6.0.0",
+    "strip-ansi": "^6.0.0",
     "ts-jest": "^26.0.0",
     "tslib": "^2.0.0",
     "typescript": "^3.9.3"

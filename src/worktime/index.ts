@@ -6,24 +6,19 @@ import * as fs from 'fs-jetpack'
 import { WorktimeLens, WorktimePlugin } from 'nexus/plugin'
 import * as os from 'os'
 import * as Path from 'path'
-import { Settings } from './settings'
-import { withDefaults } from './lib/defaults'
+import { withDefaults } from '../lib/defaults'
+import { Settings } from '../settings'
+import * as Scaffolders from './scaffolders'
+import { getGenerators } from './utils'
 
 if (process.env.LINK) {
   process.env.NEXUS_PRISMA_LINK = process.env.LINK
 }
 
-/**
- * Pinned query-engine version. Calculated at build time and based on `@prisma/cli` version
- */
-export const PRISMA_QUERY_ENGINE_VERSION: string = require('@prisma/cli/package.json').prisma.version
-
 export const plugin: WorktimePlugin<Settings> = (userSettings) => (p) => {
   const settings = withDefaults(userSettings, {
     migrations: true,
   })
-
-  p.log.trace('start')
 
   p.hooks.build.onStart = async () => {
     await runPrismaGenerators(p)
@@ -207,10 +202,6 @@ export const plugin: WorktimePlugin<Settings> = (userSettings) => (p) => {
           `)
     }
   }
-  // generate
-  p.hooks.generate.onStart = async () => {
-    await runPrismaGenerators(p)
-  }
   // dev
   p.hooks.dev.onStart = async () => {
     await runPrismaGenerators(p)
@@ -244,17 +235,6 @@ export const plugin: WorktimePlugin<Settings> = (userSettings) => (p) => {
   }
 
   return plugin
-}
-
-/**
- * Get the declared generator blocks in the user's PSL file
- */
-async function getGenerators(schemaPath: string) {
-  return await Prisma.getGenerators({
-    schemaPath,
-    printDownloadProgress: false,
-    version: PRISMA_QUERY_ENGINE_VERSION,
-  })
 }
 
 /**
@@ -325,28 +305,22 @@ async function runPrismaGenerators(
   options: { silent: boolean } = { silent: false }
 ): Promise<void> {
   if (!options.silent) {
-    p.log.info('Running Prisma generators ...')
+    p.log.info('Running generators')
   }
 
-  const schemaPath = findPrismaSchema(p)
+  const schemaPath = await findOrScaffoldPrismaSchema(p)
 
   loadEnv(p, schemaPath)
 
   p.log.trace('loading generators...')
-  let generators = await getGenerators(schemaPath)
+  const generators = await getGenerators(p, schemaPath)
   p.log.trace('generators loaded.')
 
-  if (!generators.find((g) => g.options?.generator.provider === 'prisma-client-js')) {
-    await scaffoldPrismaClientGeneratorBlock(p, schemaPath)
-    // TODO: Generate it programmatically instead for performance reason
-    generators = await getGenerators(schemaPath)
-  }
-
-  for (const g of generators) {
-    const resolvedSettings = getGeneratorResolvedSettings(g)
+  for (const generator of generators) {
+    const resolvedSettings = getGeneratorResolvedSettings(generator)
     p.log.trace('generating', resolvedSettings)
-    await g.generate()
-    g.stop()
+    await generator.generate()
+    generator.stop()
     p.log.trace('done generating', resolvedSettings)
   }
 }
@@ -370,42 +344,36 @@ export function loadEnv(p: WorktimeLens, schemaPath: string): void {
 }
 
 /**
- * Find the PSL file in the project. If multiple are found a warning is logged.
+ * Find the PSL file in the project.
  */
-function findPrismaSchema(p: WorktimeLens): string {
+async function findOrScaffoldPrismaSchema(p: WorktimeLens): Promise<string> {
   const projectRoot = p.layout.projectRoot
-  let schemaPath = Path.join(projectRoot, 'schema.prisma')
+  const rootSchemaPath = Path.join(projectRoot, 'schema.prisma')
+  const prismaSchemaPath = Path.join(projectRoot, 'prisma', 'schema.prisma')
+  const [rootSchemaPathExists, prismaSchemaPathExists] = await Promise.all([
+    fs.existsAsync(rootSchemaPath),
+    fs.existsAsync(prismaSchemaPath),
+  ])
 
-  if (fs.exists(schemaPath)) {
-    return schemaPath
-  }
+  // todo warn when multiple found
+  // todo what are the rules of where a prisma schema can be?
+  // todo what if user has prisma schema in 4 different places? Shouldn't we
+  // warn about all?
 
-  schemaPath = Path.join(projectRoot, 'prisma', 'schema.prisma')
+  if (prismaSchemaPathExists) return prismaSchemaPath
+  if (rootSchemaPathExists) return rootSchemaPath
 
-  if (fs.exists(schemaPath)) {
-    return schemaPath
-  }
+  // Scaffold an empty prisma schema
 
-  p.log.error(stripIndent`
-    We could not find any \`schema.prisma\` file. We looked in:
-      - ${Path.join(projectRoot, 'schema.prisma')}
-      - ${schemaPath}
-    Please create one or check out the docs to get started here: http://nxs.li/nexus-plugin-prisma
-  `)
-  process.exit(1)
-}
+  await Scaffolders.emptySchema(prismaSchemaPath)
 
-async function scaffoldPrismaClientGeneratorBlock(p: WorktimeLens, schemaPath: string) {
-  const relativeSchemaPath = Path.relative(process.cwd(), schemaPath)
-  p.log.warn(`A Prisma Client JS generator block is needed in your Prisma Schema at "${relativeSchemaPath}".`)
-  p.log.warn('We scaffolded one for you.')
-  const schemaContent = await fs.readAsync(schemaPath)!
-  const generatorBlock = stripIndent`
-      generator prisma_client {
-        provider = "prisma-client-js"
-      }
-    `
-  await fs.writeAsync(schemaPath, `${generatorBlock}${os.EOL}${schemaContent}`)
+  const message = `An empty Prisma Schema has been created for you at ${chalk.bold(
+    p.layout.projectRelative(prismaSchemaPath)
+  )}`
+
+  p.log.warn(message)
+
+  return prismaSchemaPath
 }
 
 async function promptForMigration(
