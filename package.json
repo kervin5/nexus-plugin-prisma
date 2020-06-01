@@ -33,7 +33,7 @@
     "postinstall": "node ./scripts/postinstall.js"
   },
   "dependencies": {
-    "@nexus/schema": "^0.14.0-next.1",
+    "@nexus/schema": "^0.14.0-next.2",
     "@prisma/cli": "2.0.0-beta.4",
     "@prisma/client": "2.0.0-beta.4",
     "@prisma/sdk": "2.0.0-beta.4",
@@ -55,7 +55,7 @@
     "dripip": "0.9.0",
     "jest": "26.0.1",
     "jest-watch-typeahead": "0.6.0",
-    "nexus": "0.22.0-next.7",
+    "nexus": "^0.22.0",
     "node-fetch": "2.6.0",
     "node-pty": "0.9.0",
     "prettier": "2.0.5",
@@ -67,7 +67,7 @@
     "typescript": "3.9.3"
   },
   "prisma": {
-    "version": "2accb9c7eacdc984874eaeb63377fe705dfd3203"
+    "version": "afd294205618b1c825b013ba6f5a6ebe4aa4a514"
   },
   "jest": {
     "preset": "ts-jest",
