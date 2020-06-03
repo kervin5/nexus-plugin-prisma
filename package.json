@@ -33,18 +33,18 @@
     "postinstall": "node ./scripts/postinstall.js"
   },
   "dependencies": {
-    "@nexus/schema": "^0.14.0-next.2",
+    "@nexus/schema": "^0.14.0",
     "@prisma/cli": "2.0.0-beta.4",
     "@prisma/client": "2.0.0-beta.4",
     "@prisma/sdk": "2.0.0-beta.4",
-    "chalk": "^3.0.0",
+    "chalk": "^4.0.0",
     "common-tags": "^1.8.0",
     "dotenv": "^8.2.0",
-    "fs-jetpack": "^2.2.3",
+    "fs-jetpack": "^2.4.0",
     "graphql": "^14.6.0",
-    "nexus-prisma": "^0.14.0-next.1",
-    "prismjs": "^1.19.0",
-    "stacktrace-parser": "^0.1.9"
+    "nexus-prisma": "^0.14.0",
+    "prismjs": "^1.20.0",
+    "stacktrace-parser": "^0.1.10"
   },
   "devDependencies": {
     "@babel/core": "7.8.7",
@@ -55,7 +55,7 @@
     "dripip": "0.9.0",
     "jest": "26.0.1",
     "jest-watch-typeahead": "0.6.0",
-    "nexus": "^0.22.0",
+    "nexus": "0.23.0-next.11",
     "node-fetch": "2.6.0",
     "node-pty": "0.9.0",
     "prettier": "2.0.5",
