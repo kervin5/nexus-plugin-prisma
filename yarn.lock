@@ -4644,10 +4644,10 @@ nexus-prisma@^0.14.0:
     outdent "^0.7.1"
     pluralize "^8.0.0"
 
-nexus@0.23.0-next.11:
-  version "0.23.0-next.11"
-  resolved "https://registry.yarnpkg.com/nexus/-/nexus-0.23.0-next.11.tgz#8dcd68e311c8343c7d781de78e61545807939fac"
-  integrity sha512-RId0gNIL3l/QVuGXy5fLtWR3pyOa+Dcan/c82AlV7eUtIXM2novWkOuhrMdJqAdcyRTEARc6XsYWIPqs/mT2ww==
+nexus@^0.23.0:
+  version "0.23.0"
+  resolved "https://registry.yarnpkg.com/nexus/-/nexus-0.23.0.tgz#716414754269ae858bdb0e11edf9109e0511db04"
+  integrity sha512-rpGV1jHksU0CHP+vwwctDgqMhv1UsxrE3K7D9ka6Ch4801F3DNjvaWiitpVebIr0OZmxHTTICDM3SjW+7my3vg==
   dependencies:
     "@nexus/logger" "^0.2.0"
     "@nexus/schema" "^0.14.0"
