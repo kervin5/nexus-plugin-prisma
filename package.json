@@ -64,7 +64,7 @@
     "strip-ansi": "6.0.0",
     "ts-jest": "26.1.0",
     "tslib": "2.0.0",
-    "typescript": "3.9.3"
+    "typescript": "3.9.5"
   },
   "prisma": {
     "version": "afd294205618b1c825b013ba6f5a6ebe4aa4a514"
