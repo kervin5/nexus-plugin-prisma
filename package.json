@@ -36,7 +36,7 @@
     "@nexus/schema": "^0.14.0",
     "@prisma/cli": "2.0.0-beta.8",
     "@prisma/client": "2.0.0-beta.8",
-    "@prisma/sdk": "2.0.0-beta.8",
+    "@prisma/sdk": "2.0.0",
     "chalk": "^4.0.0",
     "common-tags": "^1.8.0",
     "dotenv": "^8.2.0",
