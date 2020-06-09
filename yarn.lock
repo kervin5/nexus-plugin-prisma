@@ -4735,7 +4735,7 @@ nexus-prisma@^0.15.0-next.1:
     outdent "^0.7.1"
     pluralize "^8.0.0"
 
-nexus@^0.24.0-next.1:
+nexus@0.24.0-next.1:
   version "0.24.0-next.1"
   resolved "https://registry.yarnpkg.com/nexus/-/nexus-0.24.0-next.1.tgz#1afb295fc42105a224be6713ec9fdfc7753e1539"
   integrity sha512-EvD7rQtaFKwzwLR2hgwOO6qo6rlRCTILcjRLE2qVt76+MURKmJguzQXMfNJqsZG/u0mnGltnaXetQCnMr4uEKA==
