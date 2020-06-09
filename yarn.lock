@@ -932,10 +932,10 @@
   resolved "https://registry.yarnpkg.com/@prisma-labs/prettier-config/-/prettier-config-0.1.0.tgz#ef6cb5f89487974ca997516e9b39d5ccbefeeaad"
   integrity sha512-P0h2y+gnIxFP2HdsTYSYHWmabGBlxyVjnUepsrRe8gAF36mxOonGsbsQmKt/Q9H9CMjrSkFoDe5F5HLi2iW5/Q==
 
-"@prisma/cli@2.0.0-beta.8":
-  version "2.0.0-beta.8"
-  resolved "https://registry.yarnpkg.com/@prisma/cli/-/cli-2.0.0-beta.8.tgz#18356d5464040339c9c01cdf9a4241c1bccc5dea"
-  integrity sha512-l1bHUmPzjdOF87MzIkcE55AkGLDKV2apmS2D9ZuYM+7hWWMk7lcJjjquDr9RAtSDMN8nuvYQcXnFFg7JP4DUxw==
+"@prisma/cli@2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@prisma/cli/-/cli-2.0.0.tgz#d5638c627e98faaa93230359185072a19e17a020"
+  integrity sha512-RID4fOX6Y+2uHrBiFsoVt+F9oa7Z7IaO+AbwA+uepyYcjWjIhvl1cgml2mStGLyig8uuYmTOJGmh8XDkOyo10g==
 
 "@prisma/client@2.0.0-beta.8":
   version "2.0.0-beta.8"
