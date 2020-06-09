@@ -11,6 +11,14 @@ export async function e2eTestPlugin(
   ctx: ReturnType<typeof createE2EContext>,
   opts?: { withoutMigration?: boolean; withoutSeed?: boolean }
 ) {
+  // HACK temp until issue in @prisma/engine-core is fixed
+  // https://github.com/prisma/prisma/issues/2681
+  const tscfg = ctx.fs.read('tsconfig.json', 'json')
+  tscfg.compilerOptions = {
+    ...tscfg.compilerOptions,
+    esModuleInterop: true,
+  }
+  ctx.fs.write('tsconfig.json', tscfg)
   if (!opts?.withoutMigration) {
     console.log('Create migration file...')
     const dbMigrateSaveResult = await ctx
@@ -50,9 +58,12 @@ export async function e2eTestPlugin(
   await proc.pipe(takeUntilServerListening).toPromise()
 
   // Wait some arbitrary time to make sure typegen has time to be persisted to the filesystem
-  await new Promise((res) => setTimeout(res, 2000))
+  // HACK We should be waiting for an explicit log event about generators being done.
+  // Wasted hours debugging in the end a race condition becuase of this (2000ms before)
+  // https://github.com/prisma/prisma-client-js/issues/719#issuecomment-640782339
+  await new Promise((res) => setTimeout(res, 12000))
 
-  const queryResult: { worlds: any[] } = await ctx.client.request(`{
+  const queryResult: { worlds: any[] } = await ctx.client.send(`{
     worlds {
       id
       name
@@ -62,7 +73,7 @@ export async function e2eTestPlugin(
 
   expect(queryResult).toMatchSnapshot('worlds-query')
 
-  const introspectionResult = await ctx.client.request(introspectionQuery)
+  const introspectionResult = await ctx.client.send(introspectionQuery)
 
   expect(introspectionResult).toMatchSnapshot('introspection')
 

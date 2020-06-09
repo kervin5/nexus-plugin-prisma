@@ -83,6 +83,7 @@ export const plugin: RuntimePlugin<Settings> = (settings) => (project) => {
       },
       plugins: [
         nexusPrismaPlugin({
+          experimentalCRUD: settings?.features?.crud ?? false,
           inputs: {
             prismaClient: prismaClientDir,
           },

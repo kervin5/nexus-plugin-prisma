@@ -19,11 +19,11 @@
     "dev:test": "jest --watch src",
     "build": "yarn clean && node scripts/update-hash.js && node scripts/build-module-facades && tsc",
     "build:ci": "tsc",
-    "test": "jest",
+    "test": "jest --testTimeout=400000 --forceExit",
     "test:unit": "jest src --forceExit",
-    "test:e2e:mysql": "yarn test test/e2e/mysql.test.ts --testTimeout=400000",
-    "test:e2e:postgres": "yarn test test/e2e/postgres.test.ts --testTimeout=400000",
-    "test:e2e:sqlite": "yarn test test/e2e/sqlite.test.ts --testTimeout=400000",
+    "test:e2e:mysql": "yarn test test/e2e/mysql.test.ts",
+    "test:e2e:postgres": "yarn test test/e2e/postgres.test.ts",
+    "test:e2e:sqlite": "yarn test test/e2e/sqlite.test.ts",
     "test:setup:db": "docker-compose down && rm -rf .mysql-data && rm -rf .postgres-data && docker-compose up -d",
     "clean": "rm -rf dist tsconfig.tsbuildinfo",
     "release:stable": "dripip stable",
@@ -34,15 +34,15 @@
   },
   "dependencies": {
     "@nexus/schema": "^0.14.0",
-    "@prisma/cli": "2.0.0-beta.4",
-    "@prisma/client": "2.0.0-beta.4",
-    "@prisma/sdk": "2.0.0-beta.4",
+    "@prisma/cli": "2.0.0-beta.8",
+    "@prisma/client": "2.0.0-beta.8",
+    "@prisma/sdk": "2.0.0-beta.8",
     "chalk": "^4.0.0",
     "common-tags": "^1.8.0",
     "dotenv": "^8.2.0",
     "fs-jetpack": "^2.4.0",
     "graphql": "^14.6.0",
-    "nexus-prisma": "^0.14.0",
+    "nexus-prisma": "^0.15.0-next.1",
     "prismjs": "^1.20.0",
     "stacktrace-parser": "^0.1.10"
   },
@@ -55,7 +55,7 @@
     "dripip": "0.9.0",
     "jest": "26.0.1",
     "jest-watch-typeahead": "0.6.0",
-    "nexus": "0.23.0",
+    "nexus": "^0.24.0-next.1",
     "node-fetch": "2.6.0",
     "node-pty": "0.9.0",
     "prettier": "2.0.5",
@@ -67,7 +67,7 @@
     "typescript": "3.9.5"
   },
   "prisma": {
-    "version": "afd294205618b1c825b013ba6f5a6ebe4aa4a514"
+    "version": "ff6959d77f8880ec037ed8201fff4a92f3aabaa0"
   },
   "jest": {
     "preset": "ts-jest",

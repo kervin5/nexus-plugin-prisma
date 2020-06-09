@@ -1,5 +1,5 @@
-import { PrismaClientOptions as ClientOptions } from '@prisma/client/runtime/getPrismaClient'
 import { PrismaClient } from '@prisma/client'
+import { PrismaClientOptions as ClientOptions } from '@prisma/client/runtime/getPrismaClient'
 
 export type PrismaClientOptions = {
   /**
@@ -24,8 +24,17 @@ export type Settings = {
   client?: PrismaClientOptions | PrismaClientInstance
   /**
    * Enable or disable migrations run by the plugin when editing your schema.prisma file
-   * 
+   *
    * @default true
    */
   migrations?: boolean
+  /**
+   * Features that require opting into. These are all disabled by default.
+   */
+  features?: {
+    /**
+     * Enable `t.crud`
+     */
+    crud?: true
+  }
 }
